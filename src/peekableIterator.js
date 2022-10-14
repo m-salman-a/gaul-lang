@@ -15,7 +15,9 @@ export default class PeekableIterator {
   next () {
     const { value, done } = this.peek;
 
-    if (done) { return { value: { current: undefined, next: undefined }, done: true }; }
+    if (done) {
+      return { value: { current: undefined, next: undefined }, done: true };
+    }
 
     this.#peekNext();
 
