@@ -6,7 +6,7 @@ test("WHEN next() with 1 number is called SHOULD consume a number", () => {
 
 	let token = sut.next();
 
-	expect(token).toStrictEqual({ type: "num", value: 1 });
+	expect(token).toStrictEqual({ type: "num", value: "1" });
 });
 
 test("WHEN next() is called with numbers and decimal point SHOULD consume all adjacent numbers and decimal points", () => {
@@ -14,7 +14,7 @@ test("WHEN next() is called with numbers and decimal point SHOULD consume all ad
 
 	let token = sut.next();
 
-	expect(token).toStrictEqual({ type: "num", value: 123.456 });
+	expect(token).toStrictEqual({ type: "num", value: "123.456" });
 });
 
 test("WHEN next() is called with a string SHOULD consume the string without quotes", () => {

@@ -54,7 +54,7 @@ export default class Lexer {
       numStr += current;
     }
 
-    return Number(numStr);
+    return numStr;
   }
 
   #consumeString (current, next) {
