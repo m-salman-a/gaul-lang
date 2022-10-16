@@ -46,7 +46,7 @@ test("WHEN next() is called with ( SHOULD return lparen type", () => {
 
 	let token = sut.next();
 
-	expect(token).toStrictEqual({ type: "lparen" });
+	expect(token).toStrictEqual({ type: "(" });
 });
 
 test("WHEN next() is called with ) SHOULD return rparen type", () => {
@@ -54,7 +54,7 @@ test("WHEN next() is called with ) SHOULD return rparen type", () => {
 
 	let token = sut.next();
 
-	expect(token).toStrictEqual({ type: "rparen" });
+	expect(token).toStrictEqual({ type: ")" });
 });
 
 test("WHEN next() is called whitespace (space, newline) SHOULD skip", () => {

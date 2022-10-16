@@ -19,11 +19,7 @@ export default class Lexer {
       return this.next();
     } else if (current === "\t") {
       return { type: "tab" };
-    } else if (current === "(") {
-      return { type: "lparen" };
-    } else if (current === ")") {
-      return { type: "rparen" };
-    } else if (current.match(/[+\\-\\*/%]/)) {
+    } else if (current.match(/[+\\-\\*/%())]/)) {
       return { type: current };
     } else if (current.match(/[=!><]/)) {
       return { type: this.#consumeOperator(current, next) };
@@ -45,6 +41,7 @@ export default class Lexer {
 
       opStr += current;
     }
+
     return opStr;
   }
 
