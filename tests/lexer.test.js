@@ -41,20 +41,20 @@ test("WHEN next() is called with a tab SHOULD return tab type", () => {
 	expect(token).toStrictEqual({ type: "tab" });
 });
 
-test("WHEN next() is called with ( SHOULD return lparen type", () => {
+test("WHEN next() is called with ( SHOULD return symbol type with value (", () => {
 	const sut = _setupSUT("(");
 
 	let token = sut.next();
 
-	expect(token).toStrictEqual({ type: "(" });
+	expect(token).toStrictEqual({ type: "sym", value: "(" });
 });
 
-test("WHEN next() is called with ) SHOULD return rparen type", () => {
+test("WHEN next() is called with ) SHOULD return symbol type with value )", () => {
 	const sut = _setupSUT(")");
 
 	let token = sut.next();
 
-	expect(token).toStrictEqual({ type: ")" });
+	expect(token).toStrictEqual({ type: "sym", value: ")" });
 });
 
 test("WHEN next() is called whitespace (space, newline) SHOULD skip", () => {
@@ -75,7 +75,7 @@ test("WHEN next() is called with operator should return the operator as type", (
 
 	let token = sut.next();
 
-	expect(token).toStrictEqual({ type: "*" });
+	expect(token).toStrictEqual({ type: "op", value: "*" });
 });
 
 test("WHEN next() is called with comparison should return the comparison as type", () => {
@@ -83,7 +83,7 @@ test("WHEN next() is called with comparison should return the comparison as type
 
 	let token = sut.next();
 
-	expect(token).toStrictEqual({ type: ">" });
+	expect(token).toStrictEqual({ type: "op", value: ">" });
 });
 
 test("WHEN next() is called with comparison should return the comparison as type", () => {
@@ -91,9 +91,9 @@ test("WHEN next() is called with comparison should return the comparison as type
 
 	let token = sut.next();
 
-	expect(token).toStrictEqual({ type: "<=" });
+	expect(token).toStrictEqual({ type: "op", value: "<=" });
 });
 
 function _setupSUT(string) {
-	return new Lexer(new PeekableIterator(string));
+	return new Lexer(string);
 }

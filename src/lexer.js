@@ -1,6 +1,8 @@
+import PeekableIterator from "./peekableIterator";
+
 export default class Lexer {
   constructor (it) {
-    this.it = it;
+    this.it = new PeekableIterator(it);
   }
 
   [Symbol.iterator] () {
@@ -19,10 +21,12 @@ export default class Lexer {
       return this.next();
     } else if (current === "\t") {
       return { type: "tab" };
-    } else if (current.match(/[+\\-\\*/%())]/)) {
-      return { type: current };
+    } else if (current.match(/[()\\[\]]/)) {
+      return { type: "sym", value: current };
+    } else if (current.match(/[+\\-\\*/%]/)) {
+      return { type: "op", value: current };
     } else if (current.match(/[=!><]/)) {
-      return { type: this.#consumeOperator(current, next) };
+      return { type: "op", value: this.#consumeOperator(current, next) };
     } else if (current.match(/[.0-9]/)) {
       return { type: "num", value: this.#consumeNumber(current, next) };
     } else if (current.match(/"/)) {
@@ -30,6 +34,7 @@ export default class Lexer {
     } else if (current.match(/[_0-z]/)) {
       return { type: "id", value: this.#consumeIdentifier(current, next) };
     }
+
     throw SyntaxError(`Invalid token: '${current}'`);
   }
 
