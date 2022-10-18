@@ -24,7 +24,7 @@ export default class Lexer {
       return { value: new Token.Tab(), done: false };
     } else if (current.match(/[()\\[\]]/)) {
       return { value: new Token.Symbol(current), done: false };
-    } else if (current.match(/[+\\-\\*/%]/)) {
+    } else if (current.match(/[+\-\\*/%]/)) {
       return { value: new Token.Symbol(current), done: false };
     } else if (current.match(/[=!><]/)) {
       return {
