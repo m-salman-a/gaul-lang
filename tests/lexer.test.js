@@ -1,4 +1,3 @@
-import PeekableIterator from "../src/peekableIterator";
 import Lexer from "../src/lexer";
 
 test("WHEN next() with 1 number is called SHOULD consume a number", () => {
