@@ -4,7 +4,7 @@ class UnaryExpression {
   }
 
   eval () {
-    throw new Error("Must implement an eval() method");
+    throw Error("Must implement an eval() method");
   }
 }
 
