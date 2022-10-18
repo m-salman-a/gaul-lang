@@ -34,7 +34,12 @@ class Str extends Token {
 
 class Symbol extends Token {}
 
-class Id extends Token {}
+class Id extends Token {
+  constructor (value) {
+    super("id");
+    this.value = value;
+  }
+}
 
 module.exports = {
   EOF,

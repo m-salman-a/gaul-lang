@@ -3,10 +3,11 @@ import * as Literal from "../src/nodes/Literal";
 import * as Statement from "../src/nodes/Statement";
 import * as UnaryExpression from "../src/nodes/UnaryExpression";
 import { Variable } from "../src/nodes/Variable";
+import Lexer from "../src/lexer";
 import Parser from "../src/parser";
 
 test("WHEN given number token SHOULD return a Number Literal", () => {
-	const sut = _setupSUT([{ type: "num", value: "10" }]);
+	const sut = _setupSUT("10");
 
 	const ast = sut.parse();
 
@@ -15,10 +16,7 @@ test("WHEN given number token SHOULD return a Number Literal", () => {
 });
 
 test("WHEN negative number token SHOULD return a Unary Expression and Number Literal", () => {
-	const sut = _setupSUT([
-		{ type: "op", value: "-" },
-		{ type: "num", value: "10" },
-	]);
+	const sut = _setupSUT("-10");
 
 	const ast = sut.parse();
 
@@ -29,13 +27,7 @@ test("WHEN negative number token SHOULD return a Unary Expression and Number Lit
 });
 
 test("WHEN multiplying three numbers SHOULD return nested Multiply Expression", () => {
-	const sut = _setupSUT([
-		{ type: "num", value: "10" },
-		{ type: "op", value: "*" },
-		{ type: "num", value: "5" },
-		{ type: "op", value: "*" },
-		{ type: "num", value: "8" },
-	]);
+	const sut = _setupSUT("10 * 5 * 8");
 
 	const ast = sut.parse();
 
@@ -52,13 +44,7 @@ test("WHEN multiplying three numbers SHOULD return nested Multiply Expression", 
 });
 
 test("WHEN adding three numbers SHOULD return nested Add Expression", () => {
-	const sut = _setupSUT([
-		{ type: "num", value: "10" },
-		{ type: "op", value: "+" },
-		{ type: "num", value: "5" },
-		{ type: "op", value: "+" },
-		{ type: "num", value: "8" },
-	]);
+	const sut = _setupSUT("10 + 5 + 8");
 
 	const ast = sut.parse();
 
@@ -75,19 +61,7 @@ test("WHEN adding three numbers SHOULD return nested Add Expression", () => {
 });
 
 test("WHEN given a complex expression SHOULD follow PEMDAS", () => {
-	const sut = _setupSUT([
-		{ type: "num", value: "10" },
-		{ type: "op", value: "+" },
-		{ type: "num", value: "2" },
-		{ type: "op", value: "*" },
-		{ type: "sym", value: "(" },
-		{ type: "num", value: "5" },
-		{ type: "op", value: "+" },
-		{ type: "num", value: "8" },
-		{ type: "sym", value: ")" },
-		{ type: "op", value: "-" },
-		{ type: "num", value: "8" },
-	]);
+	const sut = _setupSUT("10 + 2 * (5 + 8) - 8");
 
 	const ast = sut.parse();
 
@@ -110,11 +84,7 @@ test("WHEN given a complex expression SHOULD follow PEMDAS", () => {
 });
 
 test("WHEN given an assignment statement SHOULD set variable in global scope", () => {
-	const sut = _setupSUT([
-		{ type: "id", value: "foo" },
-		{ type: "id", value: "itu" },
-		{ type: "num", value: "10" },
-	]);
+	const sut = _setupSUT("foo itu 10");
 
 	const ast = sut.parse();
 	ast.eval();
@@ -129,6 +99,6 @@ test("WHEN given an assignment statement SHOULD set variable in global scope", (
 	expect(new Variable("foo", sut.globalScope).eval()).toBe(10);
 });
 
-function _setupSUT(tokens) {
-	return new Parser(tokens);
+function _setupSUT(program) {
+	return new Parser(new Lexer(program));
 }

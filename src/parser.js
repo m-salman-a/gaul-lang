@@ -37,11 +37,11 @@ export default class Parser {
     let left = this.#parseTerm();
 
     while (true) {
-      if (this.nextToken?.value === "+") {
+      if (this.nextToken?.type === "+") {
         this.#skipToken();
         const right = this.#parseTerm();
         left = new BinaryExpression.Add(left, right);
-      } else if (this.nextToken?.value === "-") {
+      } else if (this.nextToken?.type === "-") {
         this.#skipToken();
         const right = this.#parseTerm();
         left = new BinaryExpression.Subtract(left, right);
@@ -55,11 +55,11 @@ export default class Parser {
     let left = this.#parseFactor();
 
     while (true) {
-      if (this.nextToken?.value === "*") {
+      if (this.nextToken?.type === "*") {
         this.#skipToken();
         const right = this.#parseFactor();
         left = new BinaryExpression.Multiply(left, right);
-      } else if (this.nextToken?.value === "/") {
+      } else if (this.nextToken?.type === "/") {
         this.it.next();
         const right = this.#parseFactor();
         left = new BinaryExpression.Divide(left, right);
@@ -81,11 +81,11 @@ export default class Parser {
 
     if (current.type === "num") {
       return new Literal.Number(current.value);
-    } else if (current.value === "(") {
+    } else if (current.type === "(") {
       const expression = this.#parseExpression();
       this.#skipToken();
       return expression;
-    } else if (current.value === "-") {
+    } else if (current.type === "-") {
       const expression = this.#parseExpression();
       return new UnaryExpression.Negative(expression);
     } else if (current.type === "id") {
