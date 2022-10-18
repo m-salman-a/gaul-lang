@@ -1,3 +1,4 @@
+import * as Token from "./tokens/Token";
 import PeekableIterator from "./peekableIterator";
 
 export default class Lexer {
@@ -15,24 +16,36 @@ export default class Lexer {
       done,
     } = this.it.next();
 
-    if (done) return { type: "eof" };
+    if (done) return { value: new Token.EOF(), done: true };
 
     if (current.match(/[ \n]/)) {
       return this.next();
     } else if (current === "\t") {
-      return { type: "tab" };
+      return { value: new Token.Tab(), done: false };
     } else if (current.match(/[()\\[\]]/)) {
-      return { type: "sym", value: current };
+      return { value: new Token.Symbol(current), done: false };
     } else if (current.match(/[+\\-\\*/%]/)) {
-      return { type: "op", value: current };
+      return { value: new Token.Symbol(current), done: false };
     } else if (current.match(/[=!><]/)) {
-      return { type: "op", value: this.#consumeOperator(current, next) };
+      return {
+        value: new Token.Symbol(this.#consumeOperator(current, next)),
+        done: false,
+      };
     } else if (current.match(/[.0-9]/)) {
-      return { type: "num", value: this.#consumeNumber(current, next) };
+      return {
+        value: new Token.Num(this.#consumeNumber(current, next)),
+        done: false,
+      };
     } else if (current.match(/"/)) {
-      return { type: "str", value: this.#consumeString(current, next) };
+      return {
+        value: new Token.Str(this.#consumeString(current, next)),
+        done: false,
+      };
     } else if (current.match(/[_0-z]/)) {
-      return { type: "id", value: this.#consumeIdentifier(current, next) };
+      return {
+        value: new Token.Id(this.#consumeIdentifier(current, next)),
+        done: false,
+      };
     }
 
     throw SyntaxError(`Invalid token: '${current}'`);
