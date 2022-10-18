@@ -1,6 +1,8 @@
 import * as BinaryExpression from "../src/nodes/BinaryExpression";
 import * as Literal from "../src/nodes/Literal";
+import * as Statement from "../src/nodes/Statement";
 import * as UnaryExpression from "../src/nodes/UnaryExpression";
+import { Variable } from "../src/nodes/Variable";
 import Parser from "../src/parser";
 
 test("WHEN given number token SHOULD return a Number Literal", () => {
@@ -105,6 +107,26 @@ test("WHEN given a complex expression SHOULD follow PEMDAS", () => {
 		)
 	);
 	expect(ast.eval()).toBe(28);
+});
+
+test("WHEN given an assignment statement SHOULD set variable in global scope", () => {
+	const sut = _setupSUT([
+		{ type: "id", value: "foo" },
+		{ type: "id", value: "itu" },
+		{ type: "num", value: "10" },
+	]);
+
+	const ast = sut.parse();
+	ast.eval();
+
+	expect(ast).toStrictEqual(
+		new Statement.Assignment(
+			new Variable("foo", sut.globalScope),
+			new Literal.Number("10"),
+			sut.globalScope
+		)
+	);
+	expect(new Variable("foo", sut.globalScope).eval()).toBe(10);
 });
 
 function _setupSUT(tokens) {

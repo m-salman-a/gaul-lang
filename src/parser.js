@@ -1,20 +1,36 @@
 import * as BinaryExpression from "./nodes/BinaryExpression";
 import * as Literal from "./nodes/Literal";
+import * as Statement from "./nodes/Statement";
 import * as UnaryExpression from "./nodes/UnaryExpression";
+import { Scope } from "./nodes/Scope";
+import { Variable } from "./nodes/Variable";
 import PeekableIterator from "./peekableIterator";
 
 export default class Parser {
   constructor (it) {
     this.it = new PeekableIterator(it);
     this.nextToken = null;
+    this.globalScope = new Scope();
   }
 
   parse () {
-    return this.#parseExpression();
+    return this.#parseAssignment();
   }
 
   #skipToken () {
     ({ next: this.nextToken } = this.it.next().value);
+  }
+
+  #parseAssignment () {
+    const left = this.#parseExpression();
+
+    if (this.nextToken?.value === "itu") {
+      this.#skipToken();
+      const right = this.#parseExpression();
+      return new Statement.Assignment(left, right, this.globalScope);
+    }
+
+    return left;
   }
 
   #parseExpression () {
@@ -72,6 +88,8 @@ export default class Parser {
     } else if (current.value === "-") {
       const expression = this.#parseExpression();
       return new UnaryExpression.Negative(expression);
+    } else if (current.type === "id") {
+      return new Variable(current.value, this.globalScope);
     }
   }
 }
