@@ -28,22 +28,22 @@ export default class Lexer {
       return { value: new Token.Symbol(current), done: false };
     } else if (current.match(/[=!><]/)) {
       return {
-        value: new Token.Symbol(this.#consumeOperator(current, next)),
+        value: new Token.Symbol(this.#consumeToken(current, next, /=/)),
         done: false,
       };
     } else if (current.match(/[.0-9]/)) {
       return {
-        value: new Token.Num(this.#consumeNumber(current, next)),
+        value: new Token.Num(this.#consumeToken(current, next, /[.0-9]/)),
         done: false,
       };
     } else if (current.match(/"/)) {
       return {
-        value: new Token.Str(this.#consumeString(current, next)),
+        value: new Token.Str(this.#consumeToken("", next, /[^"]/)),
         done: false,
       };
-    } else if (current.match(/[_0-z]/)) {
+    } else if (current.match(/\w/)) {
       return {
-        value: new Token.Id(this.#consumeIdentifier(current, next)),
+        value: new Token.Id(this.#consumeToken(current, next, /\w/)),
         done: false,
       };
     }
@@ -51,51 +51,15 @@ export default class Lexer {
     throw SyntaxError(`Invalid token: '${current}'`);
   }
 
-  #consumeOperator (current, next) {
-    let opStr = current;
+  #consumeToken (current, next, matcher) {
+    let str = current;
 
-    if (next?.match(/=/)) {
-      ({ current, next } = this.it.next().value);
-
-      opStr += current;
-    }
-
-    return opStr;
-  }
-
-  #consumeNumber (current, next) {
-    let numStr = current;
-
-    while (next?.match(/[.0-9]/)) {
-      ({ current, next } = this.it.next().value);
-
-      numStr += current;
-    }
-
-    return numStr;
-  }
-
-  #consumeString (current, next) {
-    let str = "";
-
-    while (next?.match(/[^"]/)) {
+    while (next?.match(matcher)) {
       ({ current, next } = this.it.next().value);
 
       str += current;
     }
 
     return str;
-  }
-
-  #consumeIdentifier (current, next) {
-    let idStr = current;
-
-    while (next?.match(/[_0-z]/)) {
-      ({ current, next } = this.it.next().value);
-
-      idStr += current;
-    }
-
-    return idStr;
   }
 }
