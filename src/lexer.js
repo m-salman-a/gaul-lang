@@ -82,11 +82,9 @@ export default class Lexer {
       ({ current, next } = this.it.next().value);
 
       str += current;
-
-      if (next?.match(/["]/)) return str;
     }
 
-    throw SyntaxError('Missing " at end of string');
+    return str;
   }
 
   #consumeIdentifier (current, next) {

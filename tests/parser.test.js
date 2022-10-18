@@ -99,6 +99,22 @@ test("WHEN given an assignment statement SHOULD set variable in global scope", (
 	expect(new Variable("foo", sut.globalScope).eval()).toBe(10);
 });
 
+test("WHEN given an assignment statement with string SHOULD set variable in global scope", () => {
+	const sut = _setupSUT(`foo itu "10"`);
+
+	const ast = sut.parse();
+	ast.eval();
+
+	expect(ast).toStrictEqual(
+		new Statement.Assignment(
+			new Variable("foo", sut.globalScope),
+			new Literal.String("10"),
+			sut.globalScope
+		)
+	);
+	expect(new Variable("foo", sut.globalScope).eval()).toBe("10");
+});
+
 function _setupSUT(program) {
 	return new Parser(new Lexer(program));
 }

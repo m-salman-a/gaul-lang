@@ -81,6 +81,8 @@ export default class Parser {
 
     if (current.type === "num") {
       return new Literal.Number(current.value);
+    } else if (current.type === "str") {
+      return new Literal.String(current.value);
     } else if (current.type === "(") {
       const expression = this.#parseExpression();
       this.#skipToken();
