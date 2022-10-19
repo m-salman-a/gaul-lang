@@ -1,5 +1,5 @@
 import Lexer from "../src/lexer";
-import * as Token from "../src/tokens/Token";
+import * as Token from "../src/tokens/token";
 
 test("WHEN next() with 1 number is called SHOULD consume a number", () => {
 	const sut = _setupSUT("1");

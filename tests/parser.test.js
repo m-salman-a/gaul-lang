@@ -1,8 +1,8 @@
-import * as BinaryExpression from "../src/nodes/BinaryExpression";
-import * as Literal from "../src/nodes/Literal";
-import * as Statement from "../src/nodes/Statement";
-import * as UnaryExpression from "../src/nodes/UnaryExpression";
-import { Variable } from "../src/nodes/Variable";
+import * as BinaryExpression from "../src/nodes/binary-expression";
+import * as Literal from "../src/nodes/literal";
+import * as Statement from "../src/nodes/statement";
+import * as UnaryExpression from "../src/nodes/unary-expression";
+import { Variable } from "../src/nodes/variable";
 import Lexer from "../src/lexer";
 import Parser from "../src/parser";
 

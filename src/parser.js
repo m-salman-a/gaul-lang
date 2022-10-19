@@ -1,10 +1,10 @@
-import * as BinaryExpression from "./nodes/BinaryExpression.js";
-import * as Literal from "./nodes/Literal.js";
-import * as Statement from "./nodes/Statement.js";
-import * as UnaryExpression from "./nodes/UnaryExpression.js";
-import { Scope } from "./nodes/Scope.js";
-import { Variable } from "./nodes/Variable.js";
-import PeekableIterator from "./PeekableIterator.js";
+import * as BinaryExpression from "./nodes/binary-expression.js";
+import * as Literal from "./nodes/literal.js";
+import * as Statement from "./nodes/statement.js";
+import * as UnaryExpression from "./nodes/unary-expression.js";
+import { Scope } from "./nodes/scope.js";
+import { Variable } from "./nodes/variable.js";
+import PeekableIterator from "./peekable-iterator.js";
 
 export default class Parser {
   constructor (it) {

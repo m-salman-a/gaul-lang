@@ -1,5 +1,5 @@
-import * as Token from "./tokens/Token.js";
-import PeekableIterator from "./PeekableIterator.js";
+import * as Token from "./tokens/token.js";
+import PeekableIterator from "./peekable-iterator.js";
 
 export default class Lexer {
   constructor (it) {

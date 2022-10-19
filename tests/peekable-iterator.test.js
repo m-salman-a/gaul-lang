@@ -1,4 +1,4 @@
-import PeekableIterator from "../src/peekableIterator";
+import PeekableIterator from "../src/peekable-iterator";
 
 test("WHEN next() is called THEN result should be first member & peek should be second member from the iterable.", () => {
 	// Arrange
