@@ -33,9 +33,4 @@ class Divide extends BinaryExpression {
   }
 }
 
-module.exports = {
-  Add,
-  Subtract,
-  Multiply,
-  Divide,
-};
+export { Add, Subtract, Multiply, Divide };

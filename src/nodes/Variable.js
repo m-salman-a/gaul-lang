@@ -9,6 +9,4 @@ class Variable {
   }
 }
 
-module.exports = {
-  Variable,
-};
+export { Variable };

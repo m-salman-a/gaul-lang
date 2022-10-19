@@ -17,6 +17,4 @@ class Assignment extends Statement {
   }
 }
 
-module.exports = {
-  Assignment,
-};
+export { Assignment };

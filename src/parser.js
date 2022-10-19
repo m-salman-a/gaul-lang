@@ -1,10 +1,10 @@
-import * as BinaryExpression from "./nodes/BinaryExpression";
-import * as Literal from "./nodes/Literal";
-import * as Statement from "./nodes/Statement";
-import * as UnaryExpression from "./nodes/UnaryExpression";
-import { Scope } from "./nodes/Scope";
-import { Variable } from "./nodes/Variable";
-import PeekableIterator from "./peekableIterator";
+import * as BinaryExpression from "./nodes/BinaryExpression.js";
+import * as Literal from "./nodes/Literal.js";
+import * as Statement from "./nodes/Statement.js";
+import * as UnaryExpression from "./nodes/UnaryExpression.js";
+import { Scope } from "./nodes/Scope.js";
+import { Variable } from "./nodes/Variable.js";
+import PeekableIterator from "./PeekableIterator.js";
 
 export default class Parser {
   constructor (it) {
@@ -19,6 +19,10 @@ export default class Parser {
 
   #skipToken () {
     ({ next: this.nextToken } = this.it.next().value);
+  }
+
+  #parseIf () {
+    // const left = this.#parseFactor();
   }
 
   #parseAssignment () {

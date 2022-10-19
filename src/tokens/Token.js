@@ -5,16 +5,14 @@ class Token {
 }
 
 class EOF extends Token {
-  constructor (value) {
+  constructor () {
     super("eof");
-    this.value = value;
   }
 }
 
 class Tab extends Token {
-  constructor (value) {
+  constructor () {
     super("tab");
-    this.value = value;
   }
 }
 
@@ -41,11 +39,4 @@ class Id extends Token {
   }
 }
 
-module.exports = {
-  EOF,
-  Tab,
-  Num,
-  Str,
-  Symbol,
-  Id,
-};
+export { EOF, Tab, Num, Str, Symbol, Id };

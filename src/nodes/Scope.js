@@ -17,4 +17,4 @@ class Scope {
   }
 }
 
-module.exports = { Scope };
+export { Scope };

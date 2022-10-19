@@ -1,5 +1,21 @@
+import Lexer from "./Lexer.js";
+import Parser from "./Parser.js";
+
+const program = "variabel itu 100 * 200 / (80 + 20)";
+const parser = new Parser(new Lexer(program));
+
+const ast = parser.parse();
+ast.eval();
+
+console.log(ast);
+console.log(parser.globalScope.get("variabel"));
+
 // Statement
 // S ::= F itu E
+//	| kalo E
+//		S
+//	  dah
+//	;
 //
 // Expression
 // E ::= T + E | T - E | T

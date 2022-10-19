@@ -14,6 +14,4 @@ class Negative extends UnaryExpression {
   }
 }
 
-module.exports = {
-  Negative,
-};
+export { Negative };

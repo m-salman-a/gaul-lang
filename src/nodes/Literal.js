@@ -20,7 +20,4 @@ class NumberLiteral extends Literal {
   }
 }
 
-module.exports = {
-  String: StringLiteral,
-  Number: NumberLiteral,
-};
+export { StringLiteral as String, NumberLiteral as Number };
