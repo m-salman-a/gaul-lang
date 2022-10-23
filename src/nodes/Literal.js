@@ -20,4 +20,14 @@ class NumberLiteral extends Literal {
   }
 }
 
-export { StringLiteral as String, NumberLiteral as Number };
+class BooleanLiteral extends Literal {
+  eval () {
+    return !!this.value;
+  }
+}
+
+export {
+  StringLiteral as String,
+  NumberLiteral as Number,
+  BooleanLiteral as Boolean,
+};
