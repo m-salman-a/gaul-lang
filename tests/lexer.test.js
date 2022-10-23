@@ -1,3 +1,4 @@
+import { Keywords } from "../src/keywords";
 import Lexer from "../src/lexer";
 import * as Token from "../src/tokens/token";
 
@@ -33,6 +34,15 @@ test("WHEN next() is called with an identifier SHOULD consume the identifier", (
 	const { value, done } = sut.next();
 
 	expect(value).toStrictEqual(new Token.Id("foo_js123"));
+	expect(done).toBe(false);
+});
+
+test("WHEN next() is called with a keyword SHOULD return keyword type", () => {
+	const sut = _setupSUT(Keywords.IF);
+
+	const { value, done } = sut.next();
+
+	expect(value).toStrictEqual(new Token.Keyword(Keywords.IF));
 	expect(done).toBe(false);
 });
 

@@ -1,5 +1,6 @@
 import * as Token from "./tokens/token.js";
 import PeekableIterator from "./peekable-iterator.js";
+import { Keywords } from "./keywords.js";
 
 export default class Lexer {
   constructor (it) {
@@ -42,8 +43,11 @@ export default class Lexer {
         done: false,
       };
     } else if (current.match(/\w/)) {
+      const token = this.#consumeToken(current, next, /\w/);
       return {
-        value: new Token.Id(this.#consumeToken(current, next, /\w/)),
+        value: this.#isKeyword(token)
+          ? new Token.Keyword(token)
+          : new Token.Id(token),
         done: false,
       };
     }
@@ -55,11 +59,19 @@ export default class Lexer {
     let str = current;
 
     while (next?.match(matcher)) {
-      ({ current, next } = this.it.next().value);
+      const { value, done } = this.it.next();
+
+      if (done) return str;
+
+      ({ current, next } = value);
 
       str += current;
     }
 
     return str;
+  }
+
+  #isKeyword (token) {
+    return Object.values(Keywords).includes(token);
   }
 }

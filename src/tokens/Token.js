@@ -4,6 +4,10 @@ class Token {
   }
 }
 
+class Symbol extends Token {}
+
+class Keyword extends Token {}
+
 class EOF extends Token {
   constructor () {
     super("eof");
@@ -13,6 +17,12 @@ class EOF extends Token {
 class Tab extends Token {
   constructor () {
     super("tab");
+  }
+}
+
+class NewLine extends Token {
+  constructor () {
+    super("newline");
   }
 }
 
@@ -30,8 +40,6 @@ class Str extends Token {
   }
 }
 
-class Symbol extends Token {}
-
 class Id extends Token {
   constructor (value) {
     super("id");
@@ -39,4 +47,4 @@ class Id extends Token {
   }
 }
 
-export { EOF, Tab, Num, Str, Symbol, Id };
+export { EOF, Tab, NewLine, Keyword, Num, Str, Symbol, Id };
