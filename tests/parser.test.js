@@ -114,6 +114,7 @@ test("WHEN given an assignment statement SHOULD set variable in global scope", (
 
 	ast.eval();
 
+	expect(ast.globalScope.get("foo")).toBe(10);
 	expect(foo.eval()).toBe(10);
 });
 
@@ -131,6 +132,7 @@ test("WHEN given an assignment statement with string SHOULD set variable in glob
 
 	ast.eval();
 
+	expect(ast.globalScope.get("foo")).toBe("10");
 	expect(foo.eval()).toBe("10");
 });
 
@@ -148,6 +150,7 @@ test("WHEN given a Boolean value SHOULD return Boolean", () => {
 
 	ast.eval();
 
+	expect(ast.globalScope.get("foo")).toBe(true);
 	expect(foo.eval()).toBe(true);
 });
 
