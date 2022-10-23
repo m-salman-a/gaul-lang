@@ -4,6 +4,17 @@ class Statement {
   }
 }
 
+class Multiple extends Statement {
+  constructor (statements) {
+    super();
+    this.statements = statements;
+  }
+
+  eval () {
+    this.statements.forEach((statement) => statement.eval());
+  }
+}
+
 class Assignment extends Statement {
   constructor (left, right, scope) {
     super();
@@ -17,4 +28,23 @@ class Assignment extends Statement {
   }
 }
 
-export { Assignment };
+class If extends Statement {
+  constructor (condition, doTrue, doFalse) {
+    super();
+    this.condition = condition;
+    this.doTrue = doTrue;
+    this.doFalse = doFalse;
+
+    this.scope = {};
+  }
+
+  eval () {
+    if (this.condition.eval()) {
+      this.doFalse.eval();
+    } else {
+      this.doTrue.eval();
+    }
+  }
+}
+
+export { Assignment, If, Multiple };

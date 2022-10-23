@@ -1,7 +1,7 @@
 class Scope {
-  constructor (parent = null) {
+  constructor (parent = null, variables = {}) {
     this.parent = parent;
-    this.variables = {};
+    this.variables = variables;
   }
 
   set (name, value) {

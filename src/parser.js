@@ -2,100 +2,259 @@ import * as BinaryExpression from "./nodes/binary-expression.js";
 import * as Literal from "./nodes/literal.js";
 import * as Statement from "./nodes/statement.js";
 import * as UnaryExpression from "./nodes/unary-expression.js";
+import { Keywords } from "./keywords.js";
+import { Program } from "./nodes/program.js";
 import { Scope } from "./nodes/scope.js";
 import { Variable } from "./nodes/variable.js";
-import PeekableIterator from "./peekable-iterator.js";
+
+class ParseToken {
+  constructor (type, value, result = null) {
+    this.type = type;
+    this.value = value;
+    this._result = result;
+  }
+
+  match (expected, func) {
+    if (this._result) return this;
+    if (this.type === expected) {
+      return new ParseToken(this.type, this.value, func());
+    }
+
+    return this;
+  }
+
+  else (func) {
+    if (this._result) return this;
+
+    return new ParseToken(this.type, this.value, func());
+  }
+
+  result () {
+    return this._result;
+  }
+}
 
 export default class Parser {
   constructor (it) {
-    this.it = new PeekableIterator(it);
+    this.it = it;
     this.nextToken = null;
-    this.globalScope = new Scope();
+    this.scopeStack = [];
+
+    this.advance();
+  }
+
+  advance () {
+    const token = this.it.next().value;
+
+    this.nextToken = new ParseToken(token.type, token.value);
+  }
+
+  consume (expected) {
+    const currentToken = this.nextToken;
+
+    if (this.nextToken.type !== expected) {
+      throw SyntaxError(
+				`Expected token of type ${expected}, but got one of ${this.type} instead`
+      );
+    }
+
+    this.advance();
+
+    return currentToken.value;
   }
 
   parse () {
-    return this.#parseAssignment();
+    return this.parseProgram();
   }
 
-  #skipToken () {
-    ({ next: this.nextToken } = this.it.next().value);
+  /**
+	 * <Program>
+	 *  : <Statement>
+	 *  ;
+	 */
+  parseProgram () {
+    // TODO: refactor somehow
+    const globalScope = new Scope();
+    this.scopeStack.push(globalScope);
+
+    const statement = this.parseStatement();
+
+    return new Program(statement, globalScope);
   }
 
-  #parseIf () {
-    // const left = this.#parseFactor();
+  /**
+	 * <Statement>
+	 *  : <If>
+	 *  | <Assignment>
+	 *  | <Expression>
+	 *  ;
+	 */
+  parseStatement () {
+    return this.nextToken
+      .match(Keywords.IF, () => {})
+      .match("id", () => this.parseAssignment())
+      .else(() => this.parseExpression())
+      .result();
   }
 
-  #parseAssignment () {
-    const left = this.#parseExpression();
+  /**
+	 * <Assignment>
+	 *  : identifier "itu" <Expression>
+	 *  ;
+	 */
+  parseAssignment () {
+    const identifier = this.parseIdentifier();
+    this.consume(Keywords.ASSIGN);
+    return new Statement.Assignment(
+      identifier,
+      this.parseExpression(),
+      this.scopeStack.at(-1)
+    );
+  }
 
-    if (this.nextToken?.value === "itu") {
-      this.#skipToken();
-      const right = this.#parseExpression();
-      return new Statement.Assignment(left, right, this.globalScope);
+  /**
+	 * <Expression>
+	 *  : <Term> "+" <Term>
+	 *  | <Term> "-" <Term>
+	 *  | <Term>
+	 *  ;
+	 */
+  parseExpression () {
+    let left = this.parseTerm();
+    let matched = true;
+
+    while (matched) {
+      matched = true;
+      left = this.nextToken
+        .match("+", () => {
+          this.advance();
+          return new BinaryExpression.Add(left, this.parseTerm());
+        })
+        .match("-", () => {
+          this.advance();
+          return new BinaryExpression.Subtract(left, this.parseTerm());
+        })
+        .else(() => {
+          matched = false;
+          return left;
+        })
+        .result();
     }
 
     return left;
   }
 
-  #parseExpression () {
-    let left = this.#parseTerm();
+  /**
+	 * <Term>
+	 *  : <Unary> "*" <Unary>
+	 *  | <Unary> "/" <Unary>
+	 *  | <Unary>
+	 *  ;
+	 */
+  parseTerm () {
+    let left = this.parseUnary();
+    let matched = true;
 
-    while (true) {
-      if (this.nextToken?.type === "+") {
-        this.#skipToken();
-        const right = this.#parseTerm();
-        left = new BinaryExpression.Add(left, right);
-      } else if (this.nextToken?.type === "-") {
-        this.#skipToken();
-        const right = this.#parseTerm();
-        left = new BinaryExpression.Subtract(left, right);
-      } else {
-        return left;
-      }
+    while (matched) {
+      matched = true;
+      left = this.nextToken
+        .match("*", () => {
+          this.advance();
+          return new BinaryExpression.Multiply(left, this.parseUnary());
+        })
+        .match("/", () => {
+          this.advance();
+          return new BinaryExpression.Divide(left, this.parseUnary());
+        })
+        .else(() => {
+          matched = false;
+          return left;
+        })
+        .result();
     }
+
+    return left;
   }
 
-  #parseTerm () {
-    let left = this.#parseFactor();
-
-    while (true) {
-      if (this.nextToken?.type === "*") {
-        this.#skipToken();
-        const right = this.#parseFactor();
-        left = new BinaryExpression.Multiply(left, right);
-      } else if (this.nextToken?.type === "/") {
-        this.it.next();
-        const right = this.#parseFactor();
-        left = new BinaryExpression.Divide(left, right);
-      } else {
-        return left;
-      }
-    }
+  /**
+	 * <Unary>
+	 *  : "-" number
+	 *  | <Literal>
+	 *  ;
+	 */
+  parseUnary () {
+    return this.nextToken
+      .match("-", () => {
+        this.advance();
+        return new UnaryExpression.Negative(this.parseNumber());
+      })
+      .else(() => this.parseLiteral())
+      .result();
   }
 
-  #parseFactor () {
-    const {
-      value: { current, next },
-      done,
-    } = this.it.next();
+  /**
+	 * <Literal>
+	 *  : "(" <Expression> ")"
+	 *  | <Boolean>
+	 *  | number
+	 *  | string
+	 *  | identifier
+	 *  ;
+	 *
+	 */
+  parseLiteral () {
+    return this.nextToken
+      .match("(", () => {
+        this.advance();
+        const expression = this.parseExpression();
+        this.consume(")");
+        return expression;
+      })
+      .match("benar", () => this.parseBoolean())
+      .match("salah", () => this.parseBoolean())
+      .match("num", () => this.parseNumber())
+      .match("str", () => this.parseString())
+      .result();
+  }
 
-    if (done) throw SyntaxError("Expected number, string, or identifier");
+  /**
+	 * identifier
+	 */
+  parseIdentifier () {
+    const value = this.consume("id");
+    const scope = this.scopeStack.at(-1);
+    return new Variable(value, scope);
+  }
 
-    this.nextToken = next;
+  /**
+	 * boolean
+	 */
+  parseBoolean () {
+    return this.nextToken
+      .match("benar", () => {
+        this.advance();
+        return new Literal.Boolean(true);
+      })
+      .match("salah", () => {
+        this.advance();
+        return new Literal.Boolean(false);
+      })
+      .result();
+  }
 
-    if (current.type === "num") {
-      return new Literal.Number(current.value);
-    } else if (current.type === "str") {
-      return new Literal.String(current.value);
-    } else if (current.type === "(") {
-      const expression = this.#parseExpression();
-      this.#skipToken();
-      return expression;
-    } else if (current.type === "-") {
-      const expression = this.#parseExpression();
-      return new UnaryExpression.Negative(expression);
-    } else if (current.type === "id") {
-      return new Variable(current.value, this.globalScope);
-    }
+  /**
+	 * number
+	 */
+  parseNumber () {
+    const value = this.consume("num");
+    return new Literal.Number(value);
+  }
+
+  /**
+	 * string
+	 */
+  parseString () {
+    const value = this.consume("str");
+    return new Literal.String(value);
   }
 }

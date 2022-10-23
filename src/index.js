@@ -1,30 +1,126 @@
 import Lexer from "./Lexer.js";
 import Parser from "./Parser.js";
 
-const program = "variabel itu 100 * 200 / (80 + 20)";
+const program = "variable itu 100 * 200 / (80 + 20)";
 const parser = new Parser(new Lexer(program));
 
 const ast = parser.parse();
 ast.eval();
 
 console.log(ast);
-console.log(parser.globalScope.get("variabel"));
+console.log(parser.globalScope.get("variable"));
 
-// Statement
-// S ::= F itu E
-//	| kalo E
-//		S
-//	  dah
-//	;
-//
-// Expression
-// E ::= T + E | T - E | T
-//
-// Term
-// T ::= F * T | F / T | F
-//
-// Factor
-// F ::= ID | Int | ( E ) | -F
+/*
+Program
+<P>
+	: <S> <EOF>
+	| <S> <P>
+	;
+
+MultipleStatement
+<MS>
+	: <S> <MS>
+	| <S>
+	;
+
+If
+<If>
+	: kalo <Condition> <> "yaudah"
+	; kalo <Condition> <If-body>
+
+<Indent>
+	: "\t" <Statement>
+	| <Indent>
+	;
+
+Assign
+<Assign>
+	: <ID> "itu" <Expr>
+	| <ID> "itu" "[" <Expr> "]"
+	;
+
+Condition
+<Condition>
+	: <Bool>
+	;
+
+Expression
+<Expr>
+	: <Term> "+" <Expr>
+	| <Term> "-" <Expr>
+	| <Term>
+	;
+
+Term
+<Term>
+	: <Unary> "*" <Term>
+	| <Unary> "/" <Term>
+	| <Unary>
+	;
+
+Unary
+<Unary>
+	: "-" <Factor>
+	| "(" <Expr> ")"
+	; <Factor>
+
+Factor
+<Factor>
+	: id
+	| num
+	;
+
+Boolean
+<Bool>
+	: "benar"
+	| "salah"
+	;
+
+Terminal = symbols (+, -, *, /)
+Nonterminal = can be expanded (factor, identifier, statement, etc.)
+Production = nonterminal + terminal
+Start = entry to program (Program -> Start)
+*/
+
+/*
+ParseToken {
+	_it: Iterable
+	_nextToken: Token
+	_result: Node
+	advance() -> Void {
+		this._nextToken
+	}
+	match(matcher, matchHandler) -> this {
+		if (!this.result) return this
+
+		if (this.nextToken.type === matcher) {
+			this._result = matchHandler()
+
+			return this
+		}
+
+		return null
+	}
+	matchNegative() -> this {
+		return match("-", new Negative(
+			new ParseToken(it)
+				.matchNumber()
+				.result())
+		) // Need node type here
+	}
+	matchNumber () -> this {
+		return match("num", new NumberLiteral())
+	}
+	matchString () -> this {
+		return match("str", new StringLiteral())
+	}
+	result () -> Node {
+		return _result
+	}
+}
+
+Obj.matchNumber().matchString() -> Obj.result = Literal
+*/
 
 /**
 // BI -> BI-lang
