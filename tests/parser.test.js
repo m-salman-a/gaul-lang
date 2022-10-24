@@ -94,31 +94,33 @@ test("WHEN given a complex expression SHOULD build tree following follow PEMDAS"
 });
 
 test("WHEN given comparison expression SHOULD work", () => {
-	const sut = _setupSUT(`(2 > 3 atau 4 >= 3) == (2 < 3 dan 4 <= 3)`);
+	const sut = _setupSUT(`bukan ((2 > 3 atau 4 >= 3) == (2 < 3 dan 4 <= 3))`);
 
 	const ast = sut.parse();
 
 	expect(ast).toStrictEqual(
 		new Program([
-			new BinaryExpression.Equal(
-				new BinaryExpression.Or(
-					new BinaryExpression.GT(
-						new Literal.Number("2"),
-						new Literal.Number("3")
+			new UnaryExpression.Not(
+				new BinaryExpression.Equal(
+					new BinaryExpression.Or(
+						new BinaryExpression.GT(
+							new Literal.Number("2"),
+							new Literal.Number("3")
+						),
+						new BinaryExpression.GTE(
+							new Literal.Number("4"),
+							new Literal.Number("3")
+						)
 					),
-					new BinaryExpression.GTE(
-						new Literal.Number("4"),
-						new Literal.Number("3")
-					)
-				),
-				new BinaryExpression.And(
-					new BinaryExpression.LT(
-						new Literal.Number("2"),
-						new Literal.Number("3")
-					),
-					new BinaryExpression.LTE(
-						new Literal.Number("4"),
-						new Literal.Number("3")
+					new BinaryExpression.And(
+						new BinaryExpression.LT(
+							new Literal.Number("2"),
+							new Literal.Number("3")
+						),
+						new BinaryExpression.LTE(
+							new Literal.Number("4"),
+							new Literal.Number("3")
+						)
 					)
 				)
 			),

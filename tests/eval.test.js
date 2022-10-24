@@ -63,18 +63,32 @@ test("WHEN given a tree with a complex expression SHOULD follow PEMDAS", () => {
 });
 
 test("WHEN given comparison SHOULD return correct boolean value", () => {
-	const sut = new BinaryExpression.Equal(
-		new BinaryExpression.Or(
-			new BinaryExpression.GT(new Literal.Number("2"), new Literal.Number("3")),
-			new BinaryExpression.GTE(new Literal.Number("4"), new Literal.Number("3"))
-		),
-		new BinaryExpression.And(
-			new BinaryExpression.LT(new Literal.Number("2"), new Literal.Number("3")),
-			new BinaryExpression.LTE(new Literal.Number("4"), new Literal.Number("3"))
+	const sut = new UnaryExpression.Not(
+		new BinaryExpression.Equal(
+			new BinaryExpression.Or(
+				new BinaryExpression.GT(
+					new Literal.Number("2"),
+					new Literal.Number("3")
+				),
+				new BinaryExpression.GTE(
+					new Literal.Number("4"),
+					new Literal.Number("3")
+				)
+			),
+			new BinaryExpression.And(
+				new BinaryExpression.LT(
+					new Literal.Number("2"),
+					new Literal.Number("3")
+				),
+				new BinaryExpression.LTE(
+					new Literal.Number("4"),
+					new Literal.Number("3")
+				)
+			)
 		)
 	);
 
-	expect(sut.eval()).toBe(false);
+	expect(sut.eval()).toBe(true);
 });
 
 test("WHEN given an assignment SHOULD set variable on scope", () => {
