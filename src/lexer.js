@@ -39,7 +39,7 @@ export default class Lexer {
       };
     } else if (current.match(/"/)) {
       return {
-        value: new Token.Str(this.#consumeToken("", next, /[^"]/)),
+        value: new Token.Str(this.#consumeString()),
         done: false,
       };
     } else if (current.match(/\w/)) {
@@ -53,6 +53,22 @@ export default class Lexer {
     }
 
     throw SyntaxError(`Invalid token: '${current}'`);
+  }
+
+  #consumeString () {
+    let str = "";
+
+    while (true) {
+      const { value, done } = this.it.next();
+
+      if (done) throw SyntaxError(`Missing " at end of string at ...`);
+
+      const current = value.current;
+
+      if (current === '"') return str;
+
+      str += current;
+    }
   }
 
   #consumeToken (current, next, matcher) {
