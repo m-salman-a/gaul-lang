@@ -314,6 +314,22 @@ yaudah
 	);
 });
 
+test("WHEN given baca & tulis SHOULD return Input & Print node", () => {
+	const program = _setupParser(`
+baca foo
+tulis 10
+`);
+
+	const ast = program.parse();
+
+	expect(ast).toStrictEqual(
+		new Program([
+			new Statement.Input(new Variable("foo")),
+			new Statement.Print(new Literal.Number(10)),
+		])
+	);
+});
+
 function _setupParser(program) {
 	return new Parser(new Lexer(program));
 }

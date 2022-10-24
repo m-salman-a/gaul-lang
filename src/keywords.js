@@ -12,6 +12,8 @@ const Keywords = Object.freeze({
   FOR: "ulangi",
   RANGE_START: "dari",
   RANGE_END: "sampe",
+  INPUT: "baca",
+  PRINT: "tulis",
 });
 
 export { Keywords };

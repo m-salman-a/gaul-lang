@@ -1,13 +1,14 @@
-import { Scope } from "./scope";
+import { Environment } from "./environment.js";
 
 class Program {
   constructor (statements) {
     this.statements = statements;
-    this.globalScope = new Scope();
+    this.env = null;
   }
 
-  eval () {
-    this.statements.forEach((statement) => statement.eval(this.globalScope));
+  eval (inputs) {
+    this.env = new Environment(null, {}, inputs);
+    this.statements.forEach((statement) => statement.eval(this.env));
   }
 }
 

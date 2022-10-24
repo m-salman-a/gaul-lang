@@ -4,7 +4,7 @@ import * as Statement from "../src/nodes/statement";
 import * as UnaryExpression from "../src/nodes/unary-expression";
 import { Program } from "../src/nodes/program";
 import { Variable } from "../src/nodes/variable";
-import { Scope } from "../src/nodes/scope";
+import { Environment } from "../src/nodes/environment";
 
 test("WHEN given NumberLiteral SHOULD eval to number", () => {
 	const ast = new Literal.Number(10);
@@ -86,7 +86,7 @@ test("WHEN given comparison SHOULD return correct boolean value", () => {
 
 test("WHEN given an assignment SHOULD set variable on scope", () => {
 	const variable = new Variable("foo");
-	const scope = new Scope();
+	const scope = new Environment();
 	const ast = new Statement.Assignment(variable, new Literal.Number(10));
 
 	ast.eval(scope);
@@ -97,7 +97,7 @@ test("WHEN given an assignment SHOULD set variable on scope", () => {
 
 test("WHEN given an if with true condition SHOULD run code in if block", () => {
 	const variable = new Variable("foo");
-	const scope = new Scope();
+	const scope = new Environment();
 	const ast = new Statement.If(
 		new Literal.Boolean(true),
 		new Statement.Assignment(variable, new Literal.Number(1)),
@@ -112,7 +112,7 @@ test("WHEN given an if with true condition SHOULD run code in if block", () => {
 
 test("WHEN given an if with false condition SHOULD run code in else block", () => {
 	const variable = new Variable("foo");
-	const scope = new Scope();
+	const scope = new Environment();
 	const ast = new Statement.If(
 		new Literal.Boolean(false),
 		new Statement.Assignment(variable, new Literal.Number(1)),
@@ -127,7 +127,7 @@ test("WHEN given an if with false condition SHOULD run code in else block", () =
 
 test("WHEN given an if-(else if)-else condition SHOULD run code with true condition", () => {
 	const variable = new Variable("foo");
-	const scope = new Scope();
+	const scope = new Environment();
 	const ast = new Statement.If(
 		new Literal.Boolean(false),
 		new Statement.Assignment(variable, new Literal.Number(1)),
@@ -162,5 +162,16 @@ test("WHEN given For statement SHOULD run code multiple times", () => {
 
 	ast.eval();
 
-	expect(ast.globalScope.get("sum")).toBe(55);
+	expect(ast.env.get("sum")).toBe(55);
+});
+
+test("WHEN given baca & tulis SHOULD set input & output stream", () => {
+	const ast = new Program([
+		new Statement.Input(new Variable("foo")),
+		new Statement.Print(new Variable("foo")),
+	]);
+
+	ast.eval([10]);
+
+	expect(ast.env.outputStream).toStrictEqual(["10"]);
 });

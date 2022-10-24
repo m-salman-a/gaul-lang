@@ -1,7 +1,9 @@
-class Scope {
-  constructor (parent = null, variables = {}) {
+class Environment {
+  constructor (parent = null, variables = {}, inputStream = []) {
     this.parent = parent;
     this.variables = variables;
+    this.inputStream = inputStream;
+    this.outputStream = [];
   }
 
   set (name, value) {
@@ -21,4 +23,4 @@ class Scope {
   }
 }
 
-export { Scope };
+export { Environment };

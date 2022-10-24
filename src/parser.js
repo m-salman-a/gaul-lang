@@ -78,8 +78,10 @@ export default class Parser {
 	 */
   parseStatement () {
     return this.nextToken
-      .match(Keywords.IF, () => this.parseIf())
       .match(Keywords.FOR, () => this.parseFor())
+      .match(Keywords.IF, () => this.parseIf())
+      .match(Keywords.INPUT, () => this.parseInput())
+      .match(Keywords.PRINT, () => this.parseOutput())
       .match("id", () => this.parseAssignment())
       .else(() => this.parseExpression())
       .result();
@@ -194,6 +196,18 @@ export default class Parser {
         return new Statement.Empty();
       })
       .result();
+  }
+
+  parseInput () {
+    this.advance();
+    const identifier = this.parseIdentifier();
+    return new Statement.Input(identifier);
+  }
+
+  parseOutput () {
+    this.advance();
+    const expression = this.parseExpression();
+    return new Statement.Print(expression);
   }
 
   /**

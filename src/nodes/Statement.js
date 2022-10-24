@@ -57,8 +57,8 @@ class For extends Statement {
 
   eval (env) {
     for (
-      let counter = this.start.eval();
-      counter <= this.end.eval();
+      let counter = this.start.eval(env);
+      counter <= this.end.eval(env);
       counter++
     ) {
       env.set(this.identifier.name, counter);
@@ -67,4 +67,33 @@ class For extends Statement {
   }
 }
 
-export { Empty, Multiple, Assignment, If, For };
+class Input extends Statement {
+  constructor (identifier) {
+    super();
+    this.identifier = identifier;
+  }
+
+  eval (env) {
+    const value = env.inputStream.pop();
+
+    if (value == null) {
+      throw EvalError(`Missing input`);
+    }
+
+    env.set(this.identifier.name, value);
+  }
+}
+
+class Print extends Statement {
+  constructor (expression) {
+    super();
+    this.expression = expression;
+  }
+
+  eval (env) {
+    const expression = this.expression.eval(env).toString();
+    env.outputStream.push(expression);
+  }
+}
+
+export { Empty, Multiple, Assignment, If, For, Input, Print };
