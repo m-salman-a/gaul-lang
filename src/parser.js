@@ -2,45 +2,10 @@ import * as BinaryExpression from "./nodes/binary-expression.js";
 import * as Literal from "./nodes/literal.js";
 import * as Statement from "./nodes/statement.js";
 import * as UnaryExpression from "./nodes/unary-expression.js";
+import { ParseToken } from "./tokens/parse-token.js";
 import { Keywords } from "./keywords.js";
 import { Program } from "./nodes/program.js";
 import { Variable } from "./nodes/variable.js";
-
-class ParseToken {
-  constructor (type, value, result = null) {
-    this.type = type;
-    this.value = value;
-    this._result = result;
-  }
-
-  match (expected, func) {
-    if (this._result) return this;
-    if (this.type === expected) {
-      return new ParseToken(this.type, this.value, func());
-    }
-
-    return this;
-  }
-
-  matchAny (expected, func) {
-    if (this._result) return this;
-    if (expected.includes(this.type)) {
-      return new ParseToken(this.type, this.value, func());
-    }
-
-    return this;
-  }
-
-  else (func) {
-    if (this._result) return this;
-
-    return new ParseToken(this.type, this.value, func());
-  }
-
-  result () {
-    return this._result;
-  }
-}
 
 export default class Parser {
   constructor (it) {
@@ -114,14 +79,59 @@ export default class Parser {
   parseStatement () {
     return this.nextToken
       .match(Keywords.IF, () => this.parseIf())
+      .match(Keywords.FOR, () => this.parseFor())
       .match("id", () => this.parseAssignment())
       .else(() => this.parseExpression())
       .result();
   }
 
+  parseFor () {
+    this.advance();
+
+    const identifier = this.parseIdentifier();
+
+    this.consume(Keywords.RANGE_START);
+    const start = this.parseExpression();
+
+    this.consume(Keywords.RANGE_END);
+    const end = this.parseExpression();
+
+    const block = this.parseForBlock();
+    this.advance();
+
+    return new Statement.For(identifier, start, end, block);
+  }
+
+  /**
+	 * <For-block>
+	 *  : <Statement> <For-block>
+	 *  | empty
+	 *  ;
+	 */
+  parseForBlock () {
+    const statements = [];
+    let matched = true;
+
+    while (matched) {
+      this.nextToken
+        .match(Keywords.END, () => {
+          matched = false;
+          return new Statement.Empty();
+        })
+        .match("eof", () => {
+          this.consume(Keywords.END);
+        })
+        .else(() => {
+          statements.push(this.parseStatement());
+        });
+    }
+
+    return new Statement.Multiple(statements);
+  }
+
   /**
 	 * <If>
-	 *  : "kalo" <Expression> <BlockStatement> <If-end>
+	 *  : "kalo" <Expression> <If-block> <If-end>
 	 *  ;
 	 */
   parseIf () {
@@ -137,6 +147,7 @@ export default class Parser {
   /**
 	 * <If-block>
 	 *  : <Statement> <If-block>
+	 *  | empty
 	 *  ;
 	 */
   parseIfBlock () {

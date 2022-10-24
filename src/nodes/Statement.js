@@ -6,7 +6,7 @@ class Statement {
 
 class Empty extends Statement {}
 
-class Block extends Statement {
+class Multiple extends Statement {
   constructor (statements) {
     super();
     this.statements = statements;
@@ -30,20 +30,41 @@ class Assignment extends Statement {
 }
 
 class If extends Statement {
-  constructor (condition, trueFunc, falseFunc) {
+  constructor (condition, trueStatement, falseStatement) {
     super();
     this.condition = condition;
-    this.trueFunc = trueFunc;
-    this.falseFunc = falseFunc;
+    this.trueStatement = trueStatement;
+    this.falseStatement = falseStatement;
   }
 
   eval (env) {
     if (this.condition.eval(env)) {
-      this.trueFunc.eval(env);
+      this.trueStatement.eval(env);
     } else {
-      this.falseFunc.eval(env);
+      this.falseStatement.eval(env);
     }
   }
 }
 
-export { Assignment, If, Block as Multiple, Empty };
+class For extends Statement {
+  constructor (identifier, start, end, statement) {
+    super();
+    this.identifier = identifier;
+    this.start = start;
+    this.end = end;
+    this.statement = statement;
+  }
+
+  eval (env) {
+    for (
+      let counter = this.start.eval();
+      counter <= this.end.eval();
+      counter++
+    ) {
+      env.set(this.identifier.name, counter);
+      this.statement.eval(env);
+    }
+  }
+}
+
+export { Empty, Multiple, Assignment, If, For };

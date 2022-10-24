@@ -6,8 +6,8 @@ class Variable {
   eval (env) {
     const value = env.get(this.name);
 
-    if (!value) {
-      throw SyntaxError(`Invalid identifier '${name}'`);
+    if (value == null) {
+      throw SyntaxError(`Unknown variable: '${this.name}'`);
     }
 
     return value;

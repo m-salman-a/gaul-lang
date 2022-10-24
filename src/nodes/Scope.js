@@ -9,11 +9,15 @@ class Scope {
   }
 
   get (name) {
-    if (this.variables[name]) return this.variables[name];
+    if (name in this.variables) return this.variables[name];
 
     if (this.parent) return this.parent.get(name);
 
     return null;
+  }
+
+  remove (name) {
+    if (name in this.variables) delete this.variables[name];
   }
 }
 
