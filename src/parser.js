@@ -203,15 +203,29 @@ export default class Parser {
 	 *  | <CompExpression>
 	 *  ;
 	 */
+  // TODO: refactor this sometime
   parseExpression () {
-    const left = this.parseArithExpression();
+    let left = this.parseCompExpression();
+    let matched = true;
 
-    return (
-      this.nextToken
-      // .matchAny((">", ">=", "<", "<=", "==", "!="), () => {})
-        .else(() => left)
-        .result()
-    );
+    while (matched) {
+      left = this.nextToken
+        .match(Keywords.AND, () => {
+          this.advance();
+          return new BinaryExpression.And(left, this.parseCompExpression());
+        })
+        .match(Keywords.OR, () => {
+          this.advance();
+          return new BinaryExpression.Or(left, this.parseCompExpression());
+        })
+        .else(() => {
+          matched = false;
+          return left;
+        })
+        .result();
+    }
+
+    return left;
   }
 
   /**
@@ -224,7 +238,37 @@ export default class Parser {
 	 *  | <ArithExpression> "!=" <ArithExpression>
 	 *  | <ArithExpression>
 	 */
-  parseCompExpression () {}
+  parseCompExpression () {
+    const left = this.parseArithExpression();
+
+    return this.nextToken
+      .match("==", () => {
+        this.advance();
+        return new BinaryExpression.Equal(left, this.parseArithExpression());
+      })
+      .match("!=", () => {
+        this.advance();
+        return new BinaryExpression.NotEqual(left, this.parseArithExpression());
+      })
+      .match(">", () => {
+        this.advance();
+        return new BinaryExpression.GT(left, this.parseArithExpression());
+      })
+      .match(">=", () => {
+        this.advance();
+        return new BinaryExpression.GTE(left, this.parseArithExpression());
+      })
+      .match("<", () => {
+        this.advance();
+        return new BinaryExpression.LT(left, this.parseArithExpression());
+      })
+      .match("<=", () => {
+        this.advance();
+        return new BinaryExpression.LTE(left, this.parseArithExpression());
+      })
+      .else(() => left)
+      .result();
+  }
 
   /**
 	 * <ArithExpression>

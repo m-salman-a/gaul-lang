@@ -33,4 +33,65 @@ class Divide extends BinaryExpression {
   }
 }
 
-export { Add, Subtract, Multiply, Divide };
+class And extends BinaryExpression {
+  eval (env) {
+    return this.left.eval(env) && this.right.eval(env);
+  }
+}
+
+class Or extends BinaryExpression {
+  eval (env) {
+    return this.left.eval(env) || this.right.eval(env);
+  }
+}
+
+class GT extends BinaryExpression {
+  eval (env) {
+    return this.left.eval(env) > this.right.eval(env);
+  }
+}
+
+class GTE extends BinaryExpression {
+  eval (env) {
+    return this.left.eval(env) >= this.right.eval(env);
+  }
+}
+
+class LT extends BinaryExpression {
+  eval (env) {
+    return this.left.eval(env) < this.right.eval(env);
+  }
+}
+
+class LTE extends BinaryExpression {
+  eval (env) {
+    return this.left.eval(env) <= this.right.eval(env);
+  }
+}
+
+class Equal extends BinaryExpression {
+  eval (env) {
+    return this.left.eval(env) === this.right.eval(env);
+  }
+}
+
+class NotEqual extends BinaryExpression {
+  eval (env) {
+    return this.left.eval(env) !== this.right.eval(env);
+  }
+}
+
+export {
+  Add,
+  Subtract,
+  Multiply,
+  Divide,
+  And,
+  Or,
+  GT,
+  GTE,
+  LT,
+  LTE,
+  Equal,
+  NotEqual,
+};
