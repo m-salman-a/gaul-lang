@@ -31,8 +31,15 @@ test("WHEN multiplying or dividing three numbers SHOULD go from left to right", 
 		),
 		new Literal.Number("8")
 	);
+});
 
-	expect(sut.eval()).toBe(6.25);
+test("WHEN given modulo SHOULD return modulo of two numbers", () => {
+	const sut = new BinaryExpression.Modulo(
+		new Literal.Number(100),
+		new Literal.Number(8)
+	);
+
+	expect(sut.eval()).toBe(4);
 });
 
 test("WHEN adding or subtracting three numbers SHOULD go from left to right", () => {

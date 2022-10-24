@@ -33,6 +33,12 @@ class Divide extends BinaryExpression {
   }
 }
 
+class Modulo extends BinaryExpression {
+  eval (env) {
+    return this.left.eval(env) % this.right.eval(env);
+  }
+}
+
 class And extends BinaryExpression {
   eval (env) {
     return this.left.eval(env) && this.right.eval(env);
@@ -86,6 +92,7 @@ export {
   Subtract,
   Multiply,
   Divide,
+  Modulo,
   And,
   Or,
   GT,

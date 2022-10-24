@@ -200,6 +200,7 @@ export default class Parser {
 	 * <Expression>
 	 *  : <Expression> "dan" <Expression>
 	 *  | <Expression> "atau" <Expression>
+	 *  | "bukan" <Expression>
 	 *  | <CompExpression>
 	 *  ;
 	 */
@@ -210,6 +211,10 @@ export default class Parser {
 
     while (matched) {
       left = this.nextToken
+        .match(Keywords.NOT, () => {
+          this.advance();
+          return new UnaryExpression.Not(this.parseExpression());
+        })
         .match(Keywords.AND, () => {
           this.advance();
           return new BinaryExpression.And(left, this.parseCompExpression());
@@ -242,21 +247,9 @@ export default class Parser {
     const left = this.parseArithExpression();
 
     return this.nextToken
-      .match("==", () => {
-        this.advance();
-        return new BinaryExpression.Equal(left, this.parseArithExpression());
-      })
-      .match("!=", () => {
-        this.advance();
-        return new BinaryExpression.NotEqual(left, this.parseArithExpression());
-      })
       .match(">", () => {
         this.advance();
         return new BinaryExpression.GT(left, this.parseArithExpression());
-      })
-      .match(">=", () => {
-        this.advance();
-        return new BinaryExpression.GTE(left, this.parseArithExpression());
       })
       .match("<", () => {
         this.advance();
@@ -265,6 +258,18 @@ export default class Parser {
       .match("<=", () => {
         this.advance();
         return new BinaryExpression.LTE(left, this.parseArithExpression());
+      })
+      .match(">=", () => {
+        this.advance();
+        return new BinaryExpression.GTE(left, this.parseArithExpression());
+      })
+      .match("!=", () => {
+        this.advance();
+        return new BinaryExpression.NotEqual(left, this.parseArithExpression());
+      })
+      .match("==", () => {
+        this.advance();
+        return new BinaryExpression.Equal(left, this.parseArithExpression());
       })
       .else(() => left)
       .result();
@@ -322,6 +327,10 @@ export default class Parser {
           this.advance();
           return new BinaryExpression.Divide(left, this.parseUnary());
         })
+        .match("%", () => {
+          this.advance();
+          return new BinaryExpression.Modulo(left, this.parseUnary());
+        })
         .else(() => {
           matched = false;
           return left;
@@ -344,10 +353,6 @@ export default class Parser {
       .match("-", () => {
         this.advance();
         return new UnaryExpression.Negative(this.parseNumber());
-      })
-      .match(Keywords.NOT, () => {
-        this.advance();
-        return new UnaryExpression.Not(this.parseExpression());
       })
       .else(() => this.parseLiteral())
       .result();
