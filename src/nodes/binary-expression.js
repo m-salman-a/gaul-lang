@@ -4,32 +4,32 @@ class BinaryExpression {
     this.right = right;
   }
 
-  eval () {
+  eval (env) {
     throw Error("Must implement an eval() method");
   }
 }
 
 class Add extends BinaryExpression {
-  eval () {
-    return this.left.eval() + this.right.eval();
+  eval (env) {
+    return this.left.eval(env) + this.right.eval(env);
   }
 }
 
 class Subtract extends BinaryExpression {
-  eval () {
-    return this.left.eval() - this.right.eval();
+  eval (env) {
+    return this.left.eval(env) - this.right.eval(env);
   }
 }
 
 class Multiply extends BinaryExpression {
-  eval () {
-    return this.left.eval() * this.right.eval();
+  eval (env) {
+    return this.left.eval(env) * this.right.eval(env);
   }
 }
 
 class Divide extends BinaryExpression {
-  eval () {
-    return this.left.eval() / this.right.eval();
+  eval (env) {
+    return this.left.eval(env) / this.right.eval(env);
   }
 }
 

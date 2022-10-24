@@ -1,50 +1,49 @@
 class Statement {
-  eval () {
+  eval (env) {
     throw Error("Must implement an eval() method");
   }
 }
 
-class Multiple extends Statement {
+class Empty extends Statement {}
+
+class Block extends Statement {
   constructor (statements) {
     super();
     this.statements = statements;
   }
 
-  eval () {
-    this.statements.forEach((statement) => statement.eval());
+  eval (env) {
+    this.statements.forEach((statement) => statement.eval(env));
   }
 }
 
 class Assignment extends Statement {
-  constructor (left, right, scope) {
+  constructor (left, right) {
     super();
     this.left = left;
     this.right = right;
-    this.scope = scope;
   }
 
-  eval () {
-    this.scope.set(this.left.name, this.right.eval());
+  eval (env) {
+    env.set(this.left.name, this.right.eval(env));
   }
 }
 
 class If extends Statement {
-  constructor (condition, doTrue, doFalse) {
+  constructor (condition, trueFunc, falseFunc) {
     super();
     this.condition = condition;
-    this.doTrue = doTrue;
-    this.doFalse = doFalse;
-
-    this.scope = {};
+    this.trueFunc = trueFunc;
+    this.falseFunc = falseFunc;
   }
 
-  eval () {
-    if (this.condition.eval()) {
-      this.doFalse.eval();
+  eval (env) {
+    if (this.condition.eval(env)) {
+      this.trueFunc.eval(env);
     } else {
-      this.doTrue.eval();
+      this.falseFunc.eval(env);
     }
   }
 }
 
-export { Assignment, If, Multiple };
+export { Assignment, If, Block as Multiple, Empty };

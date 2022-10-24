@@ -1,11 +1,16 @@
 class Variable {
-  constructor (name, scope) {
+  constructor (name) {
     this.name = name;
-    this.scope = scope;
   }
 
-  eval () {
-    return this.scope.get(this.name);
+  eval (env) {
+    const value = env.get(this.name);
+
+    if (!value) {
+      throw SyntaxError(`Invalid identifier '${name}'`);
+    }
+
+    return value;
   }
 }
 

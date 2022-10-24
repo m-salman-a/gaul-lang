@@ -11,9 +11,9 @@ class Scope {
   get (name) {
     if (this.variables[name]) return this.variables[name];
 
-    if (this.parent?.get(name)) return this.parent.get(name);
+    if (this.parent) return this.parent.get(name);
 
-    throw SyntaxError(`Invalid identifier '${name}'`);
+    return null;
   }
 }
 

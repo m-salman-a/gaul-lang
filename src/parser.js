@@ -4,7 +4,6 @@ import * as Statement from "./nodes/statement.js";
 import * as UnaryExpression from "./nodes/unary-expression.js";
 import { Keywords } from "./keywords.js";
 import { Program } from "./nodes/program.js";
-import { Scope } from "./nodes/scope.js";
 import { Variable } from "./nodes/variable.js";
 
 class ParseToken {
@@ -17,6 +16,15 @@ class ParseToken {
   match (expected, func) {
     if (this._result) return this;
     if (this.type === expected) {
+      return new ParseToken(this.type, this.value, func());
+    }
+
+    return this;
+  }
+
+  matchAny (expected, func) {
+    if (this._result) return this;
+    if (expected.includes(this.type)) {
       return new ParseToken(this.type, this.value, func());
     }
 
@@ -38,7 +46,6 @@ export default class Parser {
   constructor (it) {
     this.it = it;
     this.nextToken = null;
-    this.scopeStack = [];
 
     this.advance();
   }
@@ -53,6 +60,14 @@ export default class Parser {
     const currentToken = this.nextToken;
 
     if (this.nextToken.type !== expected) {
+      if (this.nextToken.type === "eof") {
+        throw SyntaxError(`Unexpected end of file, missing ${expected} at ...`);
+      }
+
+      if (expected === "tab") {
+        throw SyntaxError(`Missing indentation at ...`);
+      }
+
       throw SyntaxError(
 				`Expected token of type ${expected}, but got one of ${this.type} instead`
       );
@@ -73,28 +88,78 @@ export default class Parser {
 	 *  ;
 	 */
   parseProgram () {
-    // TODO: refactor somehow
-    const globalScope = new Scope();
-    this.scopeStack.push(globalScope);
+    const statements = [];
+    let matched = true;
 
-    const statement = this.parseStatement();
+    while (matched) {
+      this.nextToken
+        .match("eof", () => {
+          matched = false;
+          return new Statement.Empty();
+        })
+        .else(() => {
+          statements.push(this.parseStatement());
+        });
+    }
 
-    return new Program(statement, globalScope);
+    return new Program(statements);
   }
 
   /**
 	 * <Statement>
 	 *  : <If>
 	 *  | <Assignment>
-	 *  | <Expression>
 	 *  ;
 	 */
   parseStatement () {
     return this.nextToken
-      .match(Keywords.IF, () => {})
+      .match(Keywords.IF, () => this.parseIf())
       .match("id", () => this.parseAssignment())
       .else(() => this.parseExpression())
       .result();
+  }
+
+  /**
+	 * <If>
+	 *  : "kalo" <Boolean> <BlockStatement> "yaudah"
+	 */
+  parseIf () {
+    this.advance();
+
+    // TODO: should be expression
+    const condition = this.parseBoolean();
+    const trueBlock = this.parseBlockStatement();
+
+    return new Statement.If(condition, trueBlock, new Statement.Multiple([]));
+  }
+
+  /**
+	 * <BlockStatement>
+	 *  : tab <Statement> <BlockStatement>
+	 *  : "yaudah"
+	 *  ;
+	 */
+  parseBlockStatement () {
+    const statements = [];
+    let matched = true;
+
+    while (matched) {
+      this.consume("tab");
+
+      statements.push(this.parseStatement());
+
+      console.log(this.nextToken);
+      this.nextToken
+        .match(Keywords.END, () => {
+          this.advance();
+          matched = false;
+        })
+        .match("eof", () => {
+          this.consume(Keywords.END);
+        });
+    }
+
+    return new Statement.Multiple(statements);
   }
 
   /**
@@ -105,26 +170,32 @@ export default class Parser {
   parseAssignment () {
     const identifier = this.parseIdentifier();
     this.consume(Keywords.ASSIGN);
-    return new Statement.Assignment(
-      identifier,
-      this.parseExpression(),
-      this.scopeStack.at(-1)
+    return new Statement.Assignment(identifier, this.parseExpression());
+  }
+
+  parseExpression () {
+    const left = this.parseArithExpression();
+
+    return (
+      this.nextToken
+      // .matchAny((">", ">=", "<", "<=", "==", "!="), () => {})
+        .else(() => left)
+        .result()
     );
   }
 
   /**
-	 * <Expression>
+	 * <ArithExpression>
 	 *  : <Term> "+" <Term>
 	 *  | <Term> "-" <Term>
 	 *  | <Term>
 	 *  ;
 	 */
-  parseExpression () {
+  parseArithExpression () {
     let left = this.parseTerm();
     let matched = true;
 
     while (matched) {
-      matched = true;
       left = this.nextToken
         .match("+", () => {
           this.advance();
@@ -156,7 +227,6 @@ export default class Parser {
     let matched = true;
 
     while (matched) {
-      matched = true;
       left = this.nextToken
         .match("*", () => {
           this.advance();
@@ -188,6 +258,10 @@ export default class Parser {
         this.advance();
         return new UnaryExpression.Negative(this.parseNumber());
       })
+      .match(Keywords.NOT, () => {
+        this.advance();
+        return new UnaryExpression.Not(this.parseExpression());
+      })
       .else(() => this.parseLiteral())
       .result();
   }
@@ -210,10 +284,10 @@ export default class Parser {
         this.consume(")");
         return expression;
       })
-      .match("benar", () => this.parseBoolean())
-      .match("salah", () => this.parseBoolean())
+      .matchAny([Keywords.TRUE, Keywords.FALSE], () => this.parseBoolean())
       .match("num", () => this.parseNumber())
       .match("str", () => this.parseString())
+      .match("id", () => this.parseIdentifier())
       .result();
   }
 
@@ -222,8 +296,7 @@ export default class Parser {
 	 */
   parseIdentifier () {
     const value = this.consume("id");
-    const scope = this.scopeStack.at(-1);
-    return new Variable(value, scope);
+    return new Variable(value);
   }
 
   /**
@@ -231,11 +304,11 @@ export default class Parser {
 	 */
   parseBoolean () {
     return this.nextToken
-      .match("benar", () => {
+      .match(Keywords.TRUE, () => {
         this.advance();
         return new Literal.Boolean(true);
       })
-      .match("salah", () => {
+      .match(Keywords.FALSE, () => {
         this.advance();
         return new Literal.Boolean(false);
       })

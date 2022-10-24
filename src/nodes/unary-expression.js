@@ -3,15 +3,21 @@ class UnaryExpression {
     this.arg = arg;
   }
 
-  eval () {
+  eval (env) {
     throw Error("Must implement an eval() method");
   }
 }
 
-class Negative extends UnaryExpression {
-  eval () {
-    return -this.arg.eval();
+class Not extends UnaryExpression {
+  eval (env) {
+    return !this.arg.eval(env);
   }
 }
 
-export { Negative };
+class Negative extends UnaryExpression {
+  eval (env) {
+    return -this.arg.eval(env);
+  }
+}
+
+export { Negative, Not };

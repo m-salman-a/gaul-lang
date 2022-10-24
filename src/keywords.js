@@ -3,6 +3,8 @@ const Keywords = Object.freeze({
   ASSIGN: "itu",
   TRUE: "benar",
   FALSE: "salah",
+  NOT: "bukan",
+  END: "yaudah",
 });
 
 export { Keywords };

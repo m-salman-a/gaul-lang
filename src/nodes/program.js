@@ -1,13 +1,13 @@
 import { Scope } from "./scope";
 
 class Program {
-  constructor (program, scope = new Scope()) {
-    this.program = program;
-    this.globalScope = scope;
+  constructor (statements) {
+    this.statements = statements;
+    this.globalScope = new Scope();
   }
 
   eval () {
-    return this.program.eval();
+    this.statements.forEach((statement) => statement.eval(this.globalScope));
   }
 }
 
