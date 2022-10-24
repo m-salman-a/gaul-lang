@@ -12,7 +12,7 @@ test("WHEN given number token SHOULD return a Number Literal", () => {
 
 	const ast = sut.parse();
 
-	expect(ast).toStrictEqual(new Program([new Literal.Number("10")]));
+	expect(ast).toStrictEqual(new Program([new Literal.Number(10)]));
 });
 
 test("WHEN given string token SHOULD return a String Literal", () => {
@@ -29,7 +29,7 @@ test("WHEN negative number token SHOULD return a Unary Expression and Number Lit
 	const ast = sut.parse();
 
 	expect(ast).toStrictEqual(
-		new Program([new UnaryExpression.Negative(new Literal.Number("10"))])
+		new Program([new UnaryExpression.Negative(new Literal.Number(10))])
 	);
 });
 
@@ -42,10 +42,10 @@ test("WHEN multiplying or dividing numbers SHOULD build tree going left to right
 		new Program([
 			new BinaryExpression.Divide(
 				new BinaryExpression.Multiply(
-					new Literal.Number("10"),
-					new Literal.Number("5")
+					new Literal.Number(10),
+					new Literal.Number(5)
 				),
-				new Literal.Number("8")
+				new Literal.Number(8)
 			),
 		])
 	);
@@ -59,11 +59,8 @@ test("WHEN adding or subtracting numbers SHOULD build tree going left to right",
 	expect(ast).toStrictEqual(
 		new Program([
 			new BinaryExpression.Subtract(
-				new BinaryExpression.Add(
-					new Literal.Number("10"),
-					new Literal.Number("5")
-				),
-				new Literal.Number("8")
+				new BinaryExpression.Add(new Literal.Number(10), new Literal.Number(5)),
+				new Literal.Number(8)
 			),
 		])
 	);
@@ -78,16 +75,16 @@ test("WHEN given a complex expression SHOULD build tree following follow PEMDAS"
 		new Program([
 			new BinaryExpression.Subtract(
 				new BinaryExpression.Add(
-					new Literal.Number("10"),
+					new Literal.Number(10),
 					new BinaryExpression.Multiply(
-						new Literal.Number("2"),
+						new Literal.Number(2),
 						new BinaryExpression.Add(
-							new Literal.Number("5"),
-							new Literal.Number("8")
+							new Literal.Number(5),
+							new Literal.Number(8)
 						)
 					)
 				),
-				new Literal.Number("8")
+				new Literal.Number(8)
 			),
 		])
 	);
@@ -104,22 +101,22 @@ test("WHEN given comparison expression SHOULD work", () => {
 				new BinaryExpression.Equal(
 					new BinaryExpression.Or(
 						new BinaryExpression.GT(
-							new Literal.Number("2"),
-							new Literal.Number("3")
+							new Literal.Number(2),
+							new Literal.Number(3)
 						),
 						new BinaryExpression.GTE(
-							new Literal.Number("4"),
-							new Literal.Number("3")
+							new Literal.Number(4),
+							new Literal.Number(3)
 						)
 					),
 					new BinaryExpression.And(
 						new BinaryExpression.LT(
-							new Literal.Number("2"),
-							new Literal.Number("3")
+							new Literal.Number(2),
+							new Literal.Number(3)
 						),
 						new BinaryExpression.LTE(
-							new Literal.Number("4"),
-							new Literal.Number("3")
+							new Literal.Number(4),
+							new Literal.Number(3)
 						)
 					)
 				)
@@ -135,7 +132,7 @@ test("WHEN given an assignment statement SHOULD return an Assignment Statement",
 
 	expect(ast).toStrictEqual(
 		new Program([
-			new Statement.Assignment(new Variable("foo"), new Literal.Number("10")),
+			new Statement.Assignment(new Variable("foo"), new Literal.Number(10)),
 		])
 	);
 });
@@ -179,16 +176,10 @@ yaudah
 			new Statement.If(
 				new Literal.Boolean(true),
 				new Statement.Multiple([
+					new Statement.Assignment(new Variable("foo"), new Literal.Number(10)),
 					new Statement.Assignment(
 						new Variable("foo"),
-						new Literal.Number("10")
-					),
-					new Statement.Assignment(
-						new Variable("foo"),
-						new BinaryExpression.Add(
-							new Variable("foo"),
-							new Literal.Number("5")
-						)
+						new BinaryExpression.Add(new Variable("foo"), new Literal.Number(5))
 					),
 				]),
 				new Statement.Empty()
@@ -207,13 +198,10 @@ foo itu 10 + 5
 
 	expect(ast).toStrictEqual(
 		new Program([
-			new Statement.Assignment(new Variable("foo"), new Literal.Number("5")),
+			new Statement.Assignment(new Variable("foo"), new Literal.Number(5)),
 			new Statement.Assignment(
 				new Variable("foo"),
-				new BinaryExpression.Add(
-					new Literal.Number("10"),
-					new Literal.Number("5")
-				)
+				new BinaryExpression.Add(new Literal.Number(10), new Literal.Number(5))
 			),
 		])
 	);
@@ -261,8 +249,8 @@ yaudah
 		new Program([
 			new Statement.If(
 				new Literal.Boolean(true),
-				new Statement.Multiple([new Literal.Number("2")]),
-				new Statement.Multiple([new Literal.Number("5")])
+				new Statement.Multiple([new Literal.Number(2)]),
+				new Statement.Multiple([new Literal.Number(5)])
 			),
 		])
 	);
@@ -285,11 +273,11 @@ yaudah
 		new Program([
 			new Statement.If(
 				new Literal.Boolean(false),
-				new Statement.Multiple([new Literal.Number("2")]),
+				new Statement.Multiple([new Literal.Number(2)]),
 				new Statement.If(
 					new Literal.Boolean(true),
-					new Statement.Multiple([new Literal.Number("3")]),
-					new Statement.Multiple([new Literal.Number("5")])
+					new Statement.Multiple([new Literal.Number(3)]),
+					new Statement.Multiple([new Literal.Number(5)])
 				)
 			),
 		])

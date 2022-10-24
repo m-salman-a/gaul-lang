@@ -26,10 +26,10 @@ test("WHEN given a Negative UnaryExpression SHOULD eval to a negative number", (
 test("WHEN multiplying or dividing three numbers SHOULD go from left to right", () => {
 	const sut = new BinaryExpression.Divide(
 		new BinaryExpression.Multiply(
-			new Literal.Number("10"),
-			new Literal.Number("5")
+			new Literal.Number(10),
+			new Literal.Number(5)
 		),
-		new Literal.Number("8")
+		new Literal.Number(8)
 	);
 });
 
@@ -44,8 +44,8 @@ test("WHEN given modulo SHOULD return modulo of two numbers", () => {
 
 test("WHEN adding or subtracting three numbers SHOULD go from left to right", () => {
 	const sut = new BinaryExpression.Subtract(
-		new BinaryExpression.Add(new Literal.Number("10"), new Literal.Number("5")),
-		new Literal.Number("8")
+		new BinaryExpression.Add(new Literal.Number(10), new Literal.Number(5)),
+		new Literal.Number(8)
 	);
 
 	expect(sut.eval()).toBe(7);
@@ -54,13 +54,10 @@ test("WHEN adding or subtracting three numbers SHOULD go from left to right", ()
 test("WHEN given a tree with a complex expression SHOULD follow PEMDAS", () => {
 	const sut = new BinaryExpression.Subtract(
 		new BinaryExpression.Add(
-			new Literal.Number("10"),
+			new Literal.Number(10),
 			new BinaryExpression.Multiply(
-				new Literal.Number("2"),
-				new BinaryExpression.Add(
-					new Literal.Number("5"),
-					new Literal.Number("8")
-				)
+				new Literal.Number(2),
+				new BinaryExpression.Add(new Literal.Number(5), new Literal.Number(8))
 			)
 		),
 		new Literal.Number("8")
@@ -73,24 +70,12 @@ test("WHEN given comparison SHOULD return correct boolean value", () => {
 	const sut = new UnaryExpression.Not(
 		new BinaryExpression.Equal(
 			new BinaryExpression.Or(
-				new BinaryExpression.GT(
-					new Literal.Number("2"),
-					new Literal.Number("3")
-				),
-				new BinaryExpression.GTE(
-					new Literal.Number("4"),
-					new Literal.Number("3")
-				)
+				new BinaryExpression.GT(new Literal.Number(2), new Literal.Number(3)),
+				new BinaryExpression.GTE(new Literal.Number(4), new Literal.Number(3))
 			),
 			new BinaryExpression.And(
-				new BinaryExpression.LT(
-					new Literal.Number("2"),
-					new Literal.Number("3")
-				),
-				new BinaryExpression.LTE(
-					new Literal.Number("4"),
-					new Literal.Number("3")
-				)
+				new BinaryExpression.LT(new Literal.Number(2), new Literal.Number(3)),
+				new BinaryExpression.LTE(new Literal.Number(4), new Literal.Number(3))
 			)
 		)
 	);
@@ -101,7 +86,7 @@ test("WHEN given comparison SHOULD return correct boolean value", () => {
 test("WHEN given an assignment SHOULD set variable on scope", () => {
 	const variable = new Variable("foo");
 	const scope = new Scope();
-	const sut = new Statement.Assignment(variable, new Literal.Number("10"));
+	const sut = new Statement.Assignment(variable, new Literal.Number(10));
 
 	sut.eval(scope);
 
@@ -114,8 +99,8 @@ test("WHEN given an if with true condition SHOULD run code in if block", () => {
 	const scope = new Scope();
 	const sut = new Statement.If(
 		new Literal.Boolean(true),
-		new Statement.Assignment(variable, new Literal.Number("1")),
-		new Statement.Assignment(variable, new Literal.Number("2"))
+		new Statement.Assignment(variable, new Literal.Number(1)),
+		new Statement.Assignment(variable, new Literal.Number(2))
 	);
 
 	sut.eval(scope);
@@ -129,8 +114,8 @@ test("WHEN given an if with false condition SHOULD run code in else block", () =
 	const scope = new Scope();
 	const sut = new Statement.If(
 		new Literal.Boolean(false),
-		new Statement.Assignment(variable, new Literal.Number("1")),
-		new Statement.Assignment(variable, new Literal.Number("2"))
+		new Statement.Assignment(variable, new Literal.Number(1)),
+		new Statement.Assignment(variable, new Literal.Number(2))
 	);
 
 	sut.eval(scope);
@@ -144,11 +129,11 @@ test("WHEN given an if-(else if)-else condition SHOULD run code with true condit
 	const scope = new Scope();
 	const sut = new Statement.If(
 		new Literal.Boolean(false),
-		new Statement.Assignment(variable, new Literal.Number("1")),
+		new Statement.Assignment(variable, new Literal.Number(1)),
 		new Statement.If(
 			new Literal.Boolean(true),
-			new Statement.Assignment(variable, new Literal.Number("2")),
-			new Statement.Assignment(variable, new Literal.Number("3"))
+			new Statement.Assignment(variable, new Literal.Number(2)),
+			new Statement.Assignment(variable, new Literal.Number(3))
 		)
 	);
 

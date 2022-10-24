@@ -411,7 +411,7 @@ export default class Parser {
 	 */
   parseNumber () {
     const value = this.consume("num");
-    return new Literal.Number(value);
+    return new Literal.Number(Number(value));
   }
 
   /**
