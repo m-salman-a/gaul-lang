@@ -173,6 +173,13 @@ export default class Parser {
     return new Statement.Assignment(identifier, this.parseExpression());
   }
 
+  /**
+	 * <Expression>
+	 *  : <CompExpression> "dan" <CompExpression>
+	 *  | <CompExpression> "atau" <CompExpression>
+	 *  | <CompExpression>
+	 *  ;
+	 */
   parseExpression () {
     const left = this.parseArithExpression();
 
@@ -185,9 +192,21 @@ export default class Parser {
   }
 
   /**
+	 * <CompExpression>
+	 *  : <ArithExpression> ">" <ArithExpression>
+	 *  | <ArithExpression> ">=" <ArithExpression>
+	 *  | <ArithExpression> "<" <ArithExpression>
+	 *  | <ArithExpression> "<=" <ArithExpression>
+	 *  | <ArithExpression> "==" <ArithExpression>
+	 *  | <ArithExpression> "!=" <ArithExpression>
+	 *  | <ArithExpression>
+	 */
+  parseCompExpression () {}
+
+  /**
 	 * <ArithExpression>
-	 *  : <Term> "+" <Term>
-	 *  | <Term> "-" <Term>
+	 *  : <Term> "+" <ArithExpression>
+	 *  | <Term> "-" <ArithExpression>
 	 *  | <Term>
 	 *  ;
 	 */
@@ -217,8 +236,8 @@ export default class Parser {
 
   /**
 	 * <Term>
-	 *  : <Unary> "*" <Unary>
-	 *  | <Unary> "/" <Unary>
+	 *  : <Unary> "*" <Term>
+	 *  | <Unary> "/" <Term>
 	 *  | <Unary>
 	 *  ;
 	 */
@@ -249,6 +268,7 @@ export default class Parser {
   /**
 	 * <Unary>
 	 *  : "-" number
+	 *  | "bukan" <Expression>
 	 *  | <Literal>
 	 *  ;
 	 */
@@ -274,7 +294,6 @@ export default class Parser {
 	 *  | string
 	 *  | identifier
 	 *  ;
-	 *
 	 */
   parseLiteral () {
     return this.nextToken
