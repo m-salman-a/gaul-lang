@@ -1,14 +1,28 @@
-import Lexer from "./Lexer.js";
-import Parser from "./Parser.js";
+import Lexer from "./lexer.js";
+import Parser from "./parser.js";
 
-const program = "variable itu 100 * 200 / (80 + 20)";
-const parser = new Parser(new Lexer(program));
+const program = `
+baca n
+ulangi i dari 1 sampe n
+	kalo i % 3 == 0 dan i % 5 == 0
+		tulis "FizzBuzz"
+	kalogak i % 3 == 0
+		tulis "Fizz"
+	kalogak i % 5 == 0
+		tulis "Buzz"
+	lainnya
+		tulis i
+	yaudah
+yaudah
+`;
+const tokens = new Lexer(program);
+const parser = new Parser(tokens);
 
 const ast = parser.parse();
-ast.eval();
 
-console.log(ast);
-console.log(parser.globalScope.get("variable"));
+ast.eval([100]);
+
+console.log(ast.env.outputStream);
 
 /*
 Program
@@ -25,7 +39,7 @@ MultipleStatement
 
 If
 <If>
-	: kalo <Condition> <> "yaudah"
+	: "kalo" <Condition> <> "yaudah"
 	; kalo <Condition> <If-body>
 
 <Indent>
