@@ -126,8 +126,7 @@ export default class Parser {
   parseIf () {
     this.advance();
 
-    // TODO: should be expression
-    const condition = this.parseBoolean();
+    const condition = this.parseExpression();
     const trueBlock = this.parseBlockStatement();
 
     return new Statement.If(condition, trueBlock, new Statement.Multiple([]));
@@ -144,18 +143,17 @@ export default class Parser {
     let matched = true;
 
     while (matched) {
-      this.consume("tab");
-
-      statements.push(this.parseStatement());
-
-      console.log(this.nextToken);
       this.nextToken
-        .match(Keywords.END, () => {
+        .match("yaudah", () => {
           this.advance();
           matched = false;
+          return new Statement.Empty();
         })
         .match("eof", () => {
           this.consume(Keywords.END);
+        })
+        .else(() => {
+          statements.push(this.parseStatement());
         });
     }
 
@@ -175,8 +173,8 @@ export default class Parser {
 
   /**
 	 * <Expression>
-	 *  : <CompExpression> "dan" <CompExpression>
-	 *  | <CompExpression> "atau" <CompExpression>
+	 *  : <Expression> "dan" <Expression>
+	 *  | <Expression> "atau" <Expression>
 	 *  | <CompExpression>
 	 *  ;
 	 */
@@ -205,8 +203,8 @@ export default class Parser {
 
   /**
 	 * <ArithExpression>
-	 *  : <Term> "+" <ArithExpression>
-	 *  | <Term> "-" <ArithExpression>
+	 *  : <ArithExpression> "+" <ArithExpression>
+	 *  | <ArithExpression> "-" <ArithExpression>
 	 *  | <Term>
 	 *  ;
 	 */
@@ -236,8 +234,8 @@ export default class Parser {
 
   /**
 	 * <Term>
-	 *  : <Unary> "*" <Term>
-	 *  | <Unary> "/" <Term>
+	 *  : <Term> "*" <Term>
+	 *  | <Term> "/" <Term>
 	 *  | <Unary>
 	 *  ;
 	 */
@@ -289,7 +287,7 @@ export default class Parser {
   /**
 	 * <Literal>
 	 *  : "(" <Expression> ")"
-	 *  | <Boolean>
+	 *  | boolean
 	 *  | number
 	 *  | string
 	 *  | identifier

@@ -46,13 +46,13 @@ test("WHEN next() is called with a keyword SHOULD return keyword type", () => {
 	expect(done).toBe(false);
 });
 
-test("WHEN next() is called with a tab SHOULD return tab type", () => {
+test("WHEN next() is called with a tab SHOULD skip", () => {
 	const sut = _setupSUT(`	`);
 
 	const { value, done } = sut.next();
 
-	expect(value).toStrictEqual(new Token.Tab());
-	expect(done).toBe(false);
+	expect(value).toStrictEqual(new Token.EOF());
+	expect(done).toBe(true);
 });
 
 test("WHEN next() is called with ( SHOULD return symbol type with value (", () => {

@@ -19,10 +19,10 @@ export default class Lexer {
 
     if (done) return { value: new Token.EOF(), done: true };
 
-    if (current.match(/[ \n]/)) {
+    if (current.match(/[ \n\t]/)) {
       return this.next();
-    } else if (current === "\t") {
-      return { value: new Token.Tab(), done: false };
+      // } else if (current === "\t") {
+      //   return { value: new Token.Tab(), done: false };
     } else if (current.match(/[()\\[\]]/)) {
       return { value: new Token.Symbol(current), done: false };
     } else if (current.match(/[+\-\\*/%]/)) {

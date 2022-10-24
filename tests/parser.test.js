@@ -184,6 +184,33 @@ foo itu 10 + 5
 	);
 });
 
+test("WHEN given nested if SHOULD return Nested If Statement", () => {
+	const sut = _setupSUT(`
+kalo benar
+	kalo salah
+	yaudah
+yaudah
+`);
+
+	const ast = sut.parse();
+
+	expect(ast).toStrictEqual(
+		new Program([
+			new Statement.If(
+				new Literal.Boolean(true),
+				new Statement.Multiple([
+					new Statement.If(
+						new Literal.Boolean(false),
+						new Statement.Multiple([]),
+						new Statement.Multiple([])
+					),
+				]),
+				new Statement.Multiple([])
+			),
+		])
+	);
+});
+
 function _setupSUT(program) {
 	return new Parser(new Lexer(program));
 }
