@@ -156,7 +156,7 @@ yaudah
 						)
 					),
 				]),
-				new Statement.Multiple([])
+				new Statement.Empty()
 			),
 		])
 	);
@@ -202,10 +202,60 @@ yaudah
 					new Statement.If(
 						new Literal.Boolean(false),
 						new Statement.Multiple([]),
-						new Statement.Multiple([])
+						new Statement.Empty()
 					),
 				]),
-				new Statement.Multiple([])
+				new Statement.Empty()
+			),
+		])
+	);
+});
+
+test("WHEN given if-else statement SHOULD return correct true and false Statement", () => {
+	const sut = _setupSUT(`
+kalo benar
+	2
+lainnya
+	5
+yaudah
+`);
+
+	const ast = sut.parse();
+
+	expect(ast).toStrictEqual(
+		new Program([
+			new Statement.If(
+				new Literal.Boolean(true),
+				new Statement.Multiple([new Literal.Number("2")]),
+				new Statement.Multiple([new Literal.Number("5")])
+			),
+		])
+	);
+});
+
+test("WHEN given if-else-if-else statement SHOULD return cascading If", () => {
+	const sut = _setupSUT(`
+kalo salah
+	2
+kalogak benar
+	3
+lainnya
+	5
+yaudah
+`);
+
+	const ast = sut.parse();
+
+	expect(ast).toStrictEqual(
+		new Program([
+			new Statement.If(
+				new Literal.Boolean(false),
+				new Statement.Multiple([new Literal.Number("2")]),
+				new Statement.If(
+					new Literal.Boolean(true),
+					new Statement.Multiple([new Literal.Number("3")]),
+					new Statement.Multiple([new Literal.Number("5")])
+				)
 			),
 		])
 	);

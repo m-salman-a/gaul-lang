@@ -121,31 +121,31 @@ export default class Parser {
 
   /**
 	 * <If>
-	 *  : "kalo" <Boolean> <BlockStatement> "yaudah"
+	 *  : "kalo" <Expression> <BlockStatement> <If-end>
+	 *  ;
 	 */
   parseIf () {
     this.advance();
 
     const condition = this.parseExpression();
-    const trueBlock = this.parseBlockStatement();
+    const trueBlock = this.parseIfBlock();
+    const falseBlock = this.parseIfEnd();
 
-    return new Statement.If(condition, trueBlock, new Statement.Multiple([]));
+    return new Statement.If(condition, trueBlock, falseBlock);
   }
 
   /**
-	 * <BlockStatement>
-	 *  : tab <Statement> <BlockStatement>
-	 *  : "yaudah"
+	 * <If-block>
+	 *  : <Statement> <If-block>
 	 *  ;
 	 */
-  parseBlockStatement () {
+  parseIfBlock () {
     const statements = [];
     let matched = true;
 
     while (matched) {
       this.nextToken
-        .match("yaudah", () => {
-          this.advance();
+        .matchAny([Keywords.END, Keywords.ELSEIF, Keywords.ELSE], () => {
           matched = false;
           return new Statement.Empty();
         })
@@ -158,6 +158,31 @@ export default class Parser {
     }
 
     return new Statement.Multiple(statements);
+  }
+
+  /**
+	 * <If-end>
+	 *  : "kalogak" <Expression> <If-block> <If-end>
+	 *  | "lainnya" <If-block> "yaudah"
+	 *  | "yaudah"
+	 *  ;
+	 */
+  parseIfEnd () {
+    return this.nextToken
+      .match(Keywords.ELSEIF, () => {
+        return this.parseIf();
+      })
+      .match(Keywords.ELSE, () => {
+        this.advance();
+        const block = this.parseIfBlock();
+        this.advance();
+        return block;
+      })
+      .match(Keywords.END, () => {
+        this.advance();
+        return new Statement.Empty();
+      })
+      .result();
   }
 
   /**

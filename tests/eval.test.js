@@ -72,3 +72,52 @@ test("WHEN given an assignment SHOULD set variable on scope", () => {
 	expect(scope.get("foo")).toBe(10);
 	expect(variable.eval(scope)).toBe(10);
 });
+
+test("WHEN given an if with true condition SHOULD run code in if block", () => {
+	const variable = new Variable("foo");
+	const scope = new Scope();
+	const sut = new Statement.If(
+		new Literal.Boolean(true),
+		new Statement.Assignment(variable, new Literal.Number("1")),
+		new Statement.Assignment(variable, new Literal.Number("2"))
+	);
+
+	sut.eval(scope);
+
+	expect(scope.get("foo")).toBe(1);
+	expect(variable.eval(scope)).toBe(1);
+});
+
+test("WHEN given an if with false condition SHOULD run code in else block", () => {
+	const variable = new Variable("foo");
+	const scope = new Scope();
+	const sut = new Statement.If(
+		new Literal.Boolean(false),
+		new Statement.Assignment(variable, new Literal.Number("1")),
+		new Statement.Assignment(variable, new Literal.Number("2"))
+	);
+
+	sut.eval(scope);
+
+	expect(scope.get("foo")).toBe(2);
+	expect(variable.eval(scope)).toBe(2);
+});
+
+test("WHEN given an if-(else if)-else condition SHOULD run code with true condition", () => {
+	const variable = new Variable("foo");
+	const scope = new Scope();
+	const sut = new Statement.If(
+		new Literal.Boolean(false),
+		new Statement.Assignment(variable, new Literal.Number("1")),
+		new Statement.If(
+			new Literal.Boolean(true),
+			new Statement.Assignment(variable, new Literal.Number("2")),
+			new Statement.Assignment(variable, new Literal.Number("3"))
+		)
+	);
+
+	sut.eval(scope);
+
+	expect(scope.get("foo")).toBe(2);
+	expect(variable.eval(scope)).toBe(2);
+});
