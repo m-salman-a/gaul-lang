@@ -49,7 +49,8 @@ export default class Parser {
 
   /**
 	 * <Program>
-	 *  : <Statement>
+	 *  : <Statement> <Program>
+	 *  | empty
 	 *  ;
 	 */
   parseProgram () {
@@ -74,6 +75,9 @@ export default class Parser {
 	 * <Statement>
 	 *  : <If>
 	 *  | <Assignment>
+	 *  | <Input>
+	 *  | <Output>
+	 *  | <Expression>
 	 *  ;
 	 */
   parseStatement () {
@@ -87,6 +91,11 @@ export default class Parser {
       .result();
   }
 
+  /**
+	 * <For>
+	 *  : "ulangi" <Identifier> "dari" <Expression> "sampe" <For-block>
+	 *  ;
+	 */
   parseFor () {
     this.advance();
 
@@ -198,12 +207,22 @@ export default class Parser {
       .result();
   }
 
+  /**
+	 * <Input>
+	 *  : "baca" <Identifier>
+	 *  ;
+	 */
   parseInput () {
     this.advance();
     const identifier = this.parseIdentifier();
     return new Statement.Input(identifier);
   }
 
+  /**
+	 * <Output>
+	 *  : "tulis" <Expression>
+	 *  ;
+	 */
   parseOutput () {
     this.advance();
     const expression = this.parseExpression();
