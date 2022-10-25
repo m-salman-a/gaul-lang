@@ -9,7 +9,7 @@ const Keywords = Object.freeze({
   END: "yaudah",
   AND: "dan",
   OR: "atau",
-  FOR: "ulangi",
+  FOR: "ulangin",
   RANGE_START: "dari",
   RANGE_END: "sampe",
   INPUT: "baca",

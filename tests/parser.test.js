@@ -289,7 +289,7 @@ yaudah
 test("WHEN given For statement SHOULD run code multiple times", () => {
 	const program = _setupParser(`
 sum itu 0
-ulangi i dari 1 sampe 10
+ulangin i dari 1 sampe 10
 	sum itu sum + i
 yaudah
 `);

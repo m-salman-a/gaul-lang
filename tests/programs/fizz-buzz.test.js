@@ -5,7 +5,7 @@ import { Environment } from "../../src/nodes/environment";
 test("FizzBuzz Program", () => {
 	const program = `
 baca n
-ulangi i dari 1 sampe n
+ulangin i dari 1 sampe n
 	kalo i % 3 == 0 dan i % 5 == 0
 		tulis "FizzBuzz"
 	kalogak i % 3 == 0
