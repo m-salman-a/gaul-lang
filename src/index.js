@@ -3,16 +3,18 @@ import Parser from "./parser.js";
 
 const program = `
 baca n
-ulangi i dari 1 sampe n
-	kalo i % 3 == 0 dan i % 5 == 0
-		tulis "FizzBuzz"
-	kalogak i % 3 == 0
-		tulis "Fizz"
-	kalogak i % 5 == 0
-		tulis "Buzz"
-	lainnya
-		tulis i
+ulangin i dari 1 sampe n
+	output itu ""
+	kalo i % 3 == 0
+		output itu output + "Fizz"
 	yaudah
+	kalo i % 5 == 0
+		output itu output + "Buzz"
+	yaudah
+	kalo output == ""
+		output itu i
+	yaudah
+	tulis output
 yaudah
 `;
 const tokens = new Lexer(program);
@@ -20,9 +22,11 @@ const parser = new Parser(tokens);
 
 const ast = parser.parse();
 
-ast.eval([100]);
+ast.eval([15]).then(() => {
+  console.log(ast.env.outputStream);
+});
 
-console.log(ast.env.outputStream);
+console.log("foo bar");
 
 /*
 Program

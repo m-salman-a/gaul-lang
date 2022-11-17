@@ -6,9 +6,12 @@ class Program {
     this.env = null;
   }
 
-  eval (inputs) {
-    this.env = new Environment(null, {}, inputs);
-    this.statements.forEach((statement) => statement.eval(this.env));
+  async eval (inputs) {
+    return new Promise((resolve) => {
+      this.env = new Environment(null, {}, inputs);
+      this.statements.forEach((statement) => statement.eval(this.env));
+      resolve();
+    });
   }
 }
 

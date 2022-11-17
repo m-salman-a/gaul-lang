@@ -4,7 +4,9 @@ class Statement {
   }
 }
 
-class Empty extends Statement {}
+class Empty extends Statement {
+  eval (env) {}
+}
 
 class Multiple extends Statement {
   constructor (statements) {
