@@ -1,21 +1,24 @@
 import { Worker } from "worker_threads";
 
 const program = `
+i itu 0
 selama benar
 yaudah
+tulis i
 `;
 
 const worker = new Worker("./src/run.js", {
   workerData: { program, input: [] },
 });
 
-worker.on("message", (msg) => {
-  console.log(msg.output);
-});
-
-setTimeout(() => {
+const timeout = setTimeout(() => {
   worker.terminate();
 }, 5000);
+
+worker.on("message", (msg) => {
+  console.log(msg.output);
+  clearTimeout(timeout);
+});
 
 /*
 Program
