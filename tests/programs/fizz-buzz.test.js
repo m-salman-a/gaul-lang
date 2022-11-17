@@ -1,6 +1,5 @@
 import Lexer from "../../src/lexer";
 import Parser from "../../src/parser";
-import { Environment } from "../../src/nodes/environment";
 
 test("FizzBuzz Program", () => {
 	const program = `
