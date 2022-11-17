@@ -1,32 +1,23 @@
-import Lexer from "./lexer.js";
-import Parser from "./parser.js";
+import { Worker } from "worker_threads";
 
 const program = `
-baca n
-ulangin i dari 1 sampe n
-	output itu ""
-	kalo i % 3 == 0
-		output itu output + "Fizz"
-	yaudah
-	kalo i % 5 == 0
-		output itu output + "Buzz"
-	yaudah
-	kalo output == ""
-		output itu i
-	yaudah
-	tulis output
+selama benar
 yaudah
 `;
-const tokens = new Lexer(program);
-const parser = new Parser(tokens);
 
-const ast = parser.parse();
-
-ast.eval([15]).then(() => {
-  console.log(ast.env.outputStream);
+const worker = new Worker("./src/run.js", {
+  workerData: { program, input: [] },
 });
 
-console.log("foo bar");
+worker.on("message", (msg) => {
+  console.log(msg.output);
+});
+
+console.log("yang jalanin program");
+
+const add = 1 + 1;
+
+console.log(add);
 
 /*
 Program
