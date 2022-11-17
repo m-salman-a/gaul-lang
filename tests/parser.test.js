@@ -330,6 +330,34 @@ tulis 10
 	);
 });
 
+test("WHEN given while statement SHOULD return multiple statements and condition", () => {
+	const program = _setupParser(`
+i itu 0
+selama i < 10
+	i itu i + 1
+	tulis i
+yaudah
+`);
+
+	const ast = program.parse();
+
+	expect(ast).toStrictEqual(
+		new Program([
+			new Statement.Assignment(new Variable("i"), new Literal.Number(0)),
+			new Statement.While(
+				new BinaryExpression.LT(new Variable("i"), new Literal.Number(10)),
+				new Statement.Multiple([
+					new Statement.Assignment(
+						new Variable("i"),
+						new BinaryExpression.Add(new Variable("i"), new Literal.Number(1))
+					),
+					new Statement.Print(new Variable("i")),
+				])
+			),
+		])
+	);
+});
+
 function _setupParser(program) {
 	return new Parser(new Lexer(program));
 }

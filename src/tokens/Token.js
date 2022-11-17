@@ -28,21 +28,21 @@ class NewLine extends Token {
 
 class Num extends Token {
   constructor (value) {
-    super("num");
+    super("number");
     this.value = value;
   }
 }
 
 class Str extends Token {
   constructor (value) {
-    super("str");
+    super("string");
     this.value = value;
   }
 }
 
 class Id extends Token {
   constructor (value) {
-    super("id");
+    super("identifier");
     this.value = value;
   }
 }

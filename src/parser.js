@@ -33,8 +33,14 @@ export default class Parser {
         throw SyntaxError(`Missing indentation at ...`);
       }
 
+      if (currentToken.type === "identifier") {
+        throw SyntaxError(
+					`Expected token of type "${expected}", but got one of "${currentToken.value}" instead`
+        );
+      }
+
       throw SyntaxError(
-				`Expected token of type ${expected}, but got one of ${this.type} instead`
+				`Expected token of type "${expected}", but got one of "${currentToken.type}" instead`
       );
     }
 
@@ -86,14 +92,30 @@ export default class Parser {
       .match(Keywords.IF, () => this.parseIf())
       .match(Keywords.INPUT, () => this.parseInput())
       .match(Keywords.PRINT, () => this.parseOutput())
-      .match("id", () => this.parseAssignment())
+      .match(Keywords.WHILE, () => this.parseWhile())
+      .match("identifier", () => this.parseAssignment())
       .else(() => this.parseExpression())
       .result();
   }
 
   /**
+	 * <While>
+	 *  : "selama" <Expression> <Iteration-Block>
+	 *  ;
+	 */
+  parseWhile () {
+    this.advance();
+
+    const condition = this.parseExpression();
+    const block = this.parseIterationBlock();
+    this.advance();
+
+    return new Statement.While(condition, block);
+  }
+
+  /**
 	 * <For>
-	 *  : "ulangi" <Identifier> "dari" <Expression> "sampe" <For-block>
+	 *  : "ulangi" <Identifier> "dari" <Expression> "sampe" <Iteration-block>
 	 *  ;
 	 */
   parseFor () {
@@ -107,7 +129,7 @@ export default class Parser {
     this.consume(Keywords.RANGE_END);
     const end = this.parseExpression();
 
-    const block = this.parseForBlock();
+    const block = this.parseIterationBlock();
     this.advance();
 
     return new Statement.For(identifier, start, end, block);
@@ -116,10 +138,11 @@ export default class Parser {
   /**
 	 * <For-block>
 	 *  : <Statement> <For-block>
+	 *  | "yaudah"
 	 *  | empty
 	 *  ;
 	 */
-  parseForBlock () {
+  parseIterationBlock () {
     const statements = [];
     let matched = true;
 
@@ -420,9 +443,9 @@ export default class Parser {
         return expression;
       })
       .matchAny([Keywords.TRUE, Keywords.FALSE], () => this.parseBoolean())
-      .match("num", () => this.parseNumber())
-      .match("str", () => this.parseString())
-      .match("id", () => this.parseIdentifier())
+      .match("number", () => this.parseNumber())
+      .match("string", () => this.parseString())
+      .match("identifier", () => this.parseIdentifier())
       .result();
   }
 
@@ -430,7 +453,7 @@ export default class Parser {
 	 * identifier
 	 */
   parseIdentifier () {
-    const value = this.consume("id");
+    const value = this.consume("identifier");
     return new Variable(value);
   }
 
@@ -454,7 +477,7 @@ export default class Parser {
 	 * number
 	 */
   parseNumber () {
-    const value = this.consume("num");
+    const value = this.consume("number");
     return new Literal.Number(Number(value));
   }
 
@@ -462,7 +485,7 @@ export default class Parser {
 	 * string
 	 */
   parseString () {
-    const value = this.consume("str");
+    const value = this.consume("string");
     return new Literal.String(value);
   }
 }

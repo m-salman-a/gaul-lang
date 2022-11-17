@@ -14,6 +14,7 @@ const Keywords = Object.freeze({
   RANGE_END: "sampe",
   INPUT: "baca",
   PRINT: "tulis",
+  WHILE: "selama",
 });
 
 export { Keywords };

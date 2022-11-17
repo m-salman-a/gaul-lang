@@ -69,6 +69,20 @@ class For extends Statement {
   }
 }
 
+class While extends Statement {
+  constructor (condition, statement) {
+    super();
+    this.condition = condition;
+    this.statement = statement;
+  }
+
+  eval (env) {
+    while (this.condition.eval(env)) {
+      this.statement.eval(env);
+    }
+  }
+}
+
 class Input extends Statement {
   constructor (identifier) {
     super();
@@ -98,4 +112,4 @@ class Print extends Statement {
   }
 }
 
-export { Empty, Multiple, Assignment, If, For, Input, Print };
+export { Empty, Multiple, Assignment, If, For, Input, Print, While };

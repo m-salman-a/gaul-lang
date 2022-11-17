@@ -175,3 +175,23 @@ test("WHEN given baca & tulis SHOULD set input & output stream", () => {
 
 	expect(ast.env.outputStream).toStrictEqual(["10"]);
 });
+
+test("WHEN given while expression SHOULD eval to correct value", () => {
+	const ast = new Program([
+		new Statement.Assignment(new Variable("i"), new Literal.Number(0)),
+		new Statement.While(
+			new BinaryExpression.LT(new Variable("i"), new Literal.Number(10)),
+			new Statement.Multiple([
+				new Statement.Assignment(
+					new Variable("i"),
+					new BinaryExpression.Add(new Variable("i"), new Literal.Number(1))
+				),
+			])
+		),
+		new Statement.Print(new Variable("i")),
+	]);
+
+	ast.eval();
+
+	expect(ast.env.outputStream).toStrictEqual(["10"]);
+});
