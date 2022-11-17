@@ -13,11 +13,9 @@ worker.on("message", (msg) => {
   console.log(msg.output);
 });
 
-console.log("yang jalanin program");
-
-const add = 1 + 1;
-
-console.log(add);
+setTimeout(() => {
+  worker.terminate();
+}, 5000);
 
 /*
 Program
