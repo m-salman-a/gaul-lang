@@ -1,14 +1,17 @@
 import { Worker } from "worker_threads";
 
 const program = `
-i itu 0
-selama benar
-yaudah
-tulis i
+baca x
+baca y
+baca z
+
+tulis "x:" + x
+tulis "y:" + y
+tulis "z:" + z
 `;
 
 const worker = new Worker("./src/run.js", {
-  workerData: { program, input: [] },
+  workerData: { program, input: ["15", "xxx", "benar"] },
 });
 
 const timeout = setTimeout(() => {

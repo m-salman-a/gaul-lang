@@ -90,7 +90,7 @@ class Input extends Statement {
   }
 
   eval (env) {
-    const value = env.inputStream.pop();
+    const value = env.inputStream.shift();
 
     if (value == null) {
       throw EvalError(`Missing input`);

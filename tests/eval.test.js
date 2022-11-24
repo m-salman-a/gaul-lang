@@ -195,3 +195,15 @@ test("WHEN given while expression SHOULD eval to correct value", () => {
 
 	expect(ast.env.outputStream).toStrictEqual(["10"]);
 });
+
+test("WHEN assigning multiple variables SHOULD have correct order", () => {
+	const ast = new Program([
+		new Statement.Input(new Variable("x")),
+		new Statement.Input(new Variable("y")),
+		new Statement.Input(new Variable("z")),
+	]);
+
+	ast.eval(["15", "xxx", "benar"]);
+
+	expect(ast.env.variables).toStrictEqual({ x: "15", y: "xxx", z: "benar" });
+});
